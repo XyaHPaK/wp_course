@@ -1,0 +1,30 @@
+.gh_info_container {
+  display: flex;
+  .content_container {
+    text-align: center;
+  }
+  .repos_inf_container {
+   margin-left: 5%;
+    a {
+      h2 {
+        transition: .5s;
+        &:hover {
+          color: #e6ba5f;
+        }
+      }
+    }
+    .rep_info {
+      padding-bottom: 10px;
+      padding-top: 10px;
+      border-bottom: 1px solid #e1e4e8;
+      a {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      div {
+        font-size: 12px;
+        color: #586069;
+      }
+    }
+  }
+}

@@ -1,0 +1,125 @@
+.slider_row {
+  @media (max-width: 875px) {
+    width: 90%;
+  }
+}
+.psy_slider {
+  overflow: visible;
+  .et_pb_slides {
+    .et_pb_slide {
+      padding: 0;
+      .et_pb_container {
+        max-height: 360px !important;
+        .et_pb_slide_image {
+          img {
+            min-height: inherit;
+            max-height: initial !important;
+            max-width: 720px;
+          }
+          min-height: 360px;
+        }
+        .et_pb_slide_description {
+          padding: 35px 25px 25px 35px !important;
+          text-shadow: none;
+          margin: 20px;
+          background: #fff;
+          height: 320px;
+          @media (max-width: 767px) {
+            margin: 20px auto;
+            width: 95%;
+          }
+          .et_pb_slide_title {
+            padding-bottom: 0;
+            @media (min-width: 981px) and (max-width: 1210px) {
+              font-size: 25px !important;
+            }
+          }
+          .et_pb_slide_content {
+            margin-top: 30px;
+            @media (max-width: 1400px) {
+              margin-top: 15px;
+            }
+            @media (min-width: 981px) and (max-width: 1210px) {
+              font-size: 16px !important;
+            }
+            @media (max-width: 767px) {
+              margin-top: 30px;
+            }
+          }
+          .et_pb_more_button {
+            margin-top: 40px;
+            @media (max-width: 1575px) {
+              margin-top: 0;
+              font-size: 16px;
+            }
+            @media (min-width: 787px) and (max-width: 980px) {
+              margin-top: 70px;
+            }
+            @media (max-width: 767px) {
+              margin-top: 25%;
+            }
+          }
+        }
+      }
+    }
+  }
+  .et-pb-controllers {
+    bottom: -10%;
+    line-height: 0;
+    a {
+      background-color: #efeff1;
+    }
+    .et-pb-active-control {
+      background-color: #a1ce74;
+    }
+  }
+}
+.why_us_row {
+  .et_pb_module {
+    .et_pb_button {
+      @media (min-width: 980px) and (max-width: 1295px) {
+        padding-right: 20px !important;
+        padding-left: 20px !important;
+      }
+    }
+  }
+}
+
+.home_contact {
+  .et_pb_column {
+    .et_pb_module {
+      height: 370px;
+      @media (max-width: 768px) {
+        height: 100%;
+      }
+      h2 {
+        padding-bottom: 50px;
+      }
+    }
+  }
+  .et_pb_contact {
+    input {
+      padding-left: 0;
+    }
+    .et_pb_button {
+      margin-top: 70px;
+    }
+  }
+}
+.spc_container {
+  .et-last-child {
+    display: flex;
+    flex-wrap: wrap;
+    .img_container {
+      img {
+        max-width: 420px;
+        max-height: 210px;
+        width: 420px;
+        height: 210px;
+        @media (max-width: 980px) {
+          max-width: 100%;
+        }
+      }
+    }
+  }
+}

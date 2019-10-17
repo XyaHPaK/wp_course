@@ -1,0 +1,39 @@
+footer {
+  border-top: 8px solid #e6ba5f;
+  #footer-widgets {
+    padding-top: 20px;
+    .footer-widget {
+      margin: 0;
+      max-width: 500px;
+      h4 {
+        font-weight: 600;
+        padding-bottom: 20px;
+        @media (min-width: 980px) and (max-width: 1200px) {
+          font-size: 15px;
+        }
+      }
+      .textwidget {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        p {
+          padding-bottom: 0;
+          font-weight: 500;
+          @media (min-width: 980px) and (max-width: 1200px) {
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+  #footer-bottom {
+    padding: 25px 0;
+    .container {
+      max-width: 1300px;
+      #footer-info {
+        text-align: center;
+        line-height: 30px;
+      }
+    }
+  }
+}

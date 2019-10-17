@@ -1,0 +1,68 @@
+.other_pages {
+  .et_pb_column_1, .et_pb_column_0 {
+    max-width: 840px;
+    margin: 0;
+    margin-top: 25px;
+    padding-right: 10px;
+    @media (max-width: 1800px ) {
+      max-width: 100%;
+      width: 100%;
+    }
+    .et_pb_row_inner_0 {
+     padding-top: 0;
+    }
+    img {
+      width: 830px;
+      height: 415px;
+    }
+  }
+  .et_pb_column_2, .why_us_aside {
+    padding-left: 10px;
+    max-width: 600px;
+    width: 600px;
+    padding-top: 0;
+    @media (max-width: 1800px ) {
+      max-width: 100%;
+      width: 100%;
+    }
+    .sp_card_container {
+      width: 590px;
+      height: 175px;
+      margin-left: 0;
+      @media (max-width: 1800px ) {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      @media (max-width: 980px ) {
+        width: 100%;
+      }
+      .content_container {
+        width: 240px;
+        padding: 35px 10px 0 10px;
+      }
+      .img_container {
+        img {
+          width: 350px;
+          height: 175px;
+          @media (max-width: 980px ) {
+            width: 100%;
+          }
+        }
+      }
+    }
+    .et_pb_contact_form_0 {
+      margin-top: 20px;
+      .et_pb_contact {
+        input, textarea {
+          padding-left: 0;
+        }
+        textarea {
+          min-height: 2em;
+          &::placeholder {
+            padding-top: 20px;
+          }
+        }
+      }
+    }
+  }
+}

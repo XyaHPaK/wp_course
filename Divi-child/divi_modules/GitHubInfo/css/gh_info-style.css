@@ -1,0 +1,22 @@
+.gh_info_container {
+  display: flex; }
+  .gh_info_container .content_container {
+    text-align: center; }
+  .gh_info_container .repos_inf_container {
+    margin-left: 5%; }
+    .gh_info_container .repos_inf_container a h2 {
+      transition: .5s; }
+      .gh_info_container .repos_inf_container a h2:hover {
+        color: #e6ba5f; }
+    .gh_info_container .repos_inf_container .rep_info {
+      padding-bottom: 10px;
+      padding-top: 10px;
+      border-bottom: 1px solid #e1e4e8; }
+      .gh_info_container .repos_inf_container .rep_info a {
+        font-size: 20px;
+        font-weight: 600; }
+      .gh_info_container .repos_inf_container .rep_info div {
+        font-size: 12px;
+        color: #586069; }
+
+/*# sourceMappingURL=gh_info-style.css.map */
