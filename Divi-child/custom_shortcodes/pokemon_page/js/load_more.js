@@ -1,7 +1,24 @@
 jQuery(function($){
     /*
-    * This func execution will make equal pokemons containers heights
+     * This func execution will init slick slider
+     * */
+    function slick_init() {
+        $('.slider_wrap').slick();
+    }
+    /*
+     * This func execution will destroy earlier initialized slick slider
+     * */
+    function destroy_slick() {
+        if ($('.slider_wrap').hasClass('slick-initialized')) {
+            $('.slider_wrap').slick('destroy');
+        }
+    }
+    /*
+    * We use upper functions to reinitialize our slick sliders after our ajax request
     * */
+    /*
+     * This func (below) finds the highest element with chosen class and make other elements with the same class to be equal to it
+     * */
     function fixHeights() {
         var heights = new Array();
 
@@ -18,6 +35,7 @@ jQuery(function($){
 
         // Find max height of all elements
         var max = Math.max.apply( Math, heights );
+
         // Set all heights to max height
         $('.pokemon_image').each(function() {
             if (window.innerWidth < 600) {
@@ -28,20 +46,6 @@ jQuery(function($){
 
             // Note: IF box-sizing is border-box, would need to manually add border and padding to height (or tallest element will overflow by amount of vertical border + vertical padding)
         });
-    }
-    /*
-     * This func execution will init slick slider
-     * */
-    function slick_init() {
-        $('.slider_wrap').slick();
-    }
-    /*
-     * This func execution will destroy earlier initialized slick slider
-     * */
-    function destroy_slick() {
-        if ($('.slider_wrap').hasClass('slick-initialized')) {
-            $('.slider_wrap').slick('destroy');
-        }
     }
     /*
      * "Show More" button AJAX click event
@@ -71,6 +75,7 @@ jQuery(function($){
                 }
             },
             complete: function () {
+                /*makes elents equal to each other after succesfull ajax request */
                 setTimeout(fixHeights, 100);
             }
         });

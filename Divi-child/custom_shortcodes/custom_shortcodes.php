@@ -2,6 +2,8 @@
 /*Filtering Page shortcode inclusion*/
 include_once 'filtering_page/filtering_page.php';
 /*Custom pokemons shortcode inclusion*/
-include_once 'pokemon_page/custom_pokemons_output.php';
+include_once 'pokemon_page/CustomPokemons.php';
 /*Pokemon output shortcode inclusion*/
-include_once 'pokemon_page/pokemon_page.php';
+include_once 'pokemon_page/PokemonArchive.php';
+/*pokemons mvc inc*/
+include_once 'pokemonsmvc/pokemons.php';
