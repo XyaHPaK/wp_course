@@ -59,8 +59,9 @@
         /*
          * "Show More" button AJAX click event
          * */
-        $('#show_more').click(function(){
-            $('#show_more span').text('loading...');
+        $('#show_more').click(function( event ){
+            event.preventDefault();
+            $('#show_more a').text('loading...');
             var data_arr = {
                 'action': 'load_more',
                 'query': fivemorepoksajax.poks_arr,
@@ -74,7 +75,7 @@
                 success:function(data){
                     if( data ) {
                         destroy_slick();
-                        $('#show_more span').text('Show More');
+                        $('#show_more a').text('Show More');
                         $('#show_more').before(data);
                         fivemorepoksajax.offset = Number(fivemorepoksajax.offset) + 15;
                         if (fivemorepoksajax.offset >= fivemorepoksajax.length) $("#show_more").remove();
@@ -89,6 +90,15 @@
                 }
             });
         });
+
+        $('.pok_link').click(function ( event ) {
+            event.preventDefault();
+            window.location.href = event.currentTarget.attributes.href.nodeValue;
+
+            // console.log(window.location);
+        });
+
+
         /*
          * Execute the upper func when window loads
          * */

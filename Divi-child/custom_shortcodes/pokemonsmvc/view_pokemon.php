@@ -35,24 +35,32 @@ class view_pokemon {
      * */
     static function custom_poks_output($names) {
         $names_arr = explode(' ', $names);
+        $arch_link = model_pokemon::get_archive_page_link();
         if ($names !== '') { ?>
             <div class="pokemons_arch_grid">
             <?php foreach ($names_arr as $name) {
                 $data = model_pokemon::get_pokemon_data_by_name($name);
+                $link = model_pokemon::get_archive_page_link(). '?id=' .($data->name);
                 $evolutions = $data->evolutions;
                 echo '<div class="grid_item">';
-                    echo '<div class="slider_wrap">';
-                        echo self::poks_markup($data->image, $data->maxHP, $data->maxCP, $data->fleeRate, $data->name);
-                        if ($evolutions) {
-                            foreach ($evolutions as $evo_pok) {
-                                echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name);
+                    echo '<div class="slider_wrap">'; ?>
+                        <a href="<?php echo $link; ?>">
+                            <?php echo self::poks_markup($data->image, $data->maxHP, $data->maxCP, $data->fleeRate, $data->name); ?>
+                        </a>
+                            <?php
+                            if ($evolutions) {
+                                foreach ($evolutions as $evo_pok) {
+                                    $link = model_pokemon::get_archive_page_link(). '?id=' .($evo_pok->name); ?>
+                                    <a href="<?php echo $link; ?>">
+                                    <?php echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name); ?>
+                                    </a>
+                                <?php }
                             }
-                        }
                     echo'</div>';
                 echo '</div>';
             }?>
                 <div class="arch_link">
-                    <span><?php echo __('All Pokemons'); ?></span>
+                    <a href="<?php echo $arch_link; ?>"><?php echo __('All Pokemons'); ?></a>
                 </div>
             </div>
             <?php
@@ -66,20 +74,27 @@ class view_pokemon {
         <div class="pokemons_arch_grid">
         <?php foreach ($filtered_poks as $pok) {
             $evolutions = $pok->evolutions;
+            $link = model_pokemon::get_archive_page_link(). '?id=' .($pok->name);
             echo '<div class="grid_item">';
-                echo '<div class="slider_wrap">';
-                    echo self::poks_markup($pok->image, $pok->maxHP, $pok->maxCP, $pok->fleeRate, $pok->name);
-                    if ($evolutions !== null) {
+                echo '<div class="slider_wrap">'; ?>
+                    <a class="pok_link" href="<?php echo $link; ?>">
+                        <?php echo self::poks_markup($pok->image, $pok->maxHP, $pok->maxCP, $pok->fleeRate, $pok->name); ?>
+                    </a>
+                    <?php
+                    if ($evolutions) {
                         foreach ($evolutions as $evo_pok) {
-                            echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name);
-                        }
+                            $link = model_pokemon::get_archive_page_link(). '?id=' .($evo_pok->name); ?>
+                            <a class="pok_link" href="<?php echo $link; ?>">
+                                <?php echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name); ?>
+                            </a>
+                        <?php }
                     }
                 echo'</div>';
             echo '</div>';
             }
             ?>
             <div id="show_more" class="pokemon_cont show_more">
-                <span>Show More</span>
+                <a><?php echo __('Show More'); ?></a>
             </div>
         </div>
         <?php
@@ -97,7 +112,7 @@ class view_pokemon {
             echo '<div class="grid_item">';
                 echo '<div class="slider_wrap">';
                     echo self::poks_markup($pok['image'], $pok['maxHP'], $pok['maxCP'], $pok['fleeRate'], $pok['name']);
-                    if ($evolutions !== null) {
+                    if ($evolutions) {
                         foreach ($evolutions as $evo_pok) {
                             echo self::poks_markup($evo_pok['image'], $evo_pok['maxHP'], $evo_pok['maxCP'], $evo_pok['fleeRate'], $evo_pok['name']);
                         }

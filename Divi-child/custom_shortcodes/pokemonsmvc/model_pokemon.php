@@ -142,18 +142,26 @@ class model_pokemon {
         $true_evo_arr = array_unique($evo_arr);
         return $true_evo_arr;
     }
-
+    /*
+     * "poks_arch_single" shortcode handler
+     * */
     function pokemons_arch_shortcode_handler() {
+//        var_dump(self::get_single_pok_link('some_name'));
         $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
         ob_start();
         view_pokemon::poks_archive_output( $filtered_poks );
         $out = ob_get_clean();
         return $out;
     }
-
+    /*
+     * ajax load more
+     * */
     function poks_load() {
         view_pokemon::poks_load_more();
     }
+    /*
+     * "custom_poks" shortcode handler
+     * */
     function custom_poks_handler($atts) {
         extract(shortcode_atts(array(
             'names' => ''
@@ -163,6 +171,14 @@ class model_pokemon {
         $out = ob_get_clean();
         return $out;
     }
+    /*
+     * returns a link to archive page
+     * */
+    static function get_archive_page_link() {
+        $arch_page_id = self::current_page_id('%[poks_arch_single]%');
+        $arch_page_link = get_page_link($arch_page_id);
+        return $arch_page_link;
+    }
 }
 /*
  * shortcode existence checking
@@ -170,4 +186,3 @@ class model_pokemon {
 if (model_pokemon::current_page_id('%[poks_arch_single]%') || model_pokemon::current_page_id('%[custom_poks%')) {
     new model_pokemon();
 }
-
