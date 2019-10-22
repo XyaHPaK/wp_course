@@ -36,6 +36,9 @@
     function slick_init() {
         $('.slider_wrap').slick();
     }
+    function sp_slick_init() {
+        $('.single_page_slider').slick();
+    }
     /*
      * This func execution will destroy earlier initialized slick slider
      * */
@@ -53,7 +56,7 @@
     /* START --> document.ready */
     $(document).ready(function () {
         /*
-         * Initialize our slick slider when page loads
+         * Initialize our slick sliders on archive page when page loads
          * */
         slick_init();
         /*
@@ -94,9 +97,43 @@
         $('.pok_link').click(function ( event ) {
             event.preventDefault();
             window.location.href = event.currentTarget.attributes.href.nodeValue;
-
-            // console.log(window.location);
         });
+
+        var searchParams = new URLSearchParams(window.location.search);
+        var name = searchParams.get('id');
+
+        if (name) {
+            var data_arr = {
+                'action': 'to_single',
+                'name': name
+            };
+            $.ajax({
+                url: fivemorepoksajax.ajaxurl,
+                data: data_arr,
+                type: 'POST',
+                beforeSend: function () {
+                    $('#fountainG').css('display', 'block');
+                },
+                success: function (data) {
+                    $('#fountainG').css('display', 'none');
+                    $('.pokemons_arch_grid').css('display', 'block').html(data);
+                    if ($(window).width() > 1200) {
+                        $('.grid_item').css({
+                            'max-width': '80%',
+                            'margin-left' : 'auto',
+                            'margin-right' : 'auto'
+                        });
+                    } else {
+                        $('.grid_item').css('max-width', '100%');
+                    }
+                    $('.pokemon_description').css('position', 'relative');
+                    sp_slick_init();
+                    fixHeights();
+                }
+            })
+        }
+
+
 
 
         /*

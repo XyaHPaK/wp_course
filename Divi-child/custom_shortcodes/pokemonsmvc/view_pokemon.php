@@ -1,11 +1,10 @@
 <?php
 namespace pokemons\mvc;
-//use pokemons\mvc\model_pokemon;
 class view_pokemon {
     /*
      * outputs markup wrapper
      * */
-    public function poks_markup($image, $hp, $cp, $flee_rate, $name) {
+    public static function poks_markup($image, $hp, $cp, $flee_rate, $name) {
         $markup = sprintf(
             '<div class="pokemon_cont">
             <div class="pokemon_image">
@@ -29,6 +28,69 @@ class view_pokemon {
             $name
         );
         return $markup;
+    }
+    /*
+     * markup for single page slider
+     * */
+    function single_poks_markup($data, $image, $hp, $cp, $flee_rate, $name, $types, $weaknesses, $classification, $resistant) {
+        $attacks_arr = model_pokemon::get_attacks_arr($data);
+        ?>
+        <div class="pokemon_cont">
+            <div class="pokemon_cont_inner">
+                <div class="pokemon_image">
+                    <img src="<?php echo $image; ?>" alt="<?php echo $image; ?>">
+                </div>
+                <div class="attacks">
+                    <h3><?php echo __('Attacks') ?></h3>
+                    <div class="attacks_info">
+                        <?php foreach ($attacks_arr as $attack_type => $attack_arr){ ?>
+                            <div class="attack_type">
+                                <h4><?php echo $attack_type ?></h4>
+                                    <?php foreach ($attack_arr as $attack){ ?>
+                                        <ul class="attack_type_list">
+                                            <li><?php echo $attack->name ?></li>
+                                            <li><?php echo __('Type : ') .  $attack->type ?></li>
+                                            <li><?php echo __('Damage : ') .  $attack->damage ?></li>
+                                        </ul>
+                                    <?php } ?>
+                            </div>
+                        <?php } ?>
+                    </div>
+                    <div class="attacks_types">
+                        <?php
+                        echo '<span>' . __('Resistant : ') . '</span>';
+                        foreach ($resistant as $res) echo $res . ' ';
+                        ?>
+                    </div>
+                    <div class="attacks_weak">
+                        <?php
+                        echo '<span>' . __('Weaknesses : ') . '</span>';
+                        foreach ($weaknesses as $weakness) echo $weakness . ' ';
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="pokemon_description">
+                <h2 class="pokemon_name"><?php echo $name; ?></h2>
+                <ul class="pokemon_stats">
+                    <li><?php echo __('Classification : ') . $classification; ?></li>
+                    <li>|</li>
+                    <li><?php echo __('HP : ') . $hp; ?></li>
+                    <li>|</li>
+                    <li><?php echo __('CP : ') . $cp; ?></li>
+                    <li>|</li>
+                    <li><?php echo __('Flee Rate : ') . $flee_rate; ?></li>
+                    <li>|</li>
+                    <li>
+                        <?php
+                        echo __('Types : ');
+                        foreach ($types as $type) echo $type . ' ';
+                        ?>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <?php
     }
     /*
      * Starts an output buffer
@@ -67,38 +129,59 @@ class view_pokemon {
         }
     }
     /*
+     * preloader html markup
+     * */
+    function preloader() {
+        ?>
+        <div id="fountainG">
+            <div id="fountainG_1" class="fountainG"></div>
+            <div id="fountainG_2" class="fountainG"></div>
+            <div id="fountainG_3" class="fountainG"></div>
+            <div id="fountainG_4" class="fountainG"></div>
+            <div id="fountainG_5" class="fountainG"></div>
+            <div id="fountainG_6" class="fountainG"></div>
+            <div id="fountainG_7" class="fountainG"></div>
+            <div id="fountainG_8" class="fountainG"></div>
+        </div>
+        <?php
+    }
+    /*
      * outputs data from the earlier filtered array to the screen (only first 15 from array)
      * */
     static function poks_archive_output( $filtered_poks ) {
-        ?>
-        <div class="pokemons_arch_grid">
-        <?php foreach ($filtered_poks as $pok) {
-            $evolutions = $pok->evolutions;
-            $link = model_pokemon::get_archive_page_link(). '?id=' .($pok->name);
-            echo '<div class="grid_item">';
-                echo '<div class="slider_wrap">'; ?>
-                    <a class="pok_link" href="<?php echo $link; ?>">
-                        <?php echo self::poks_markup($pok->image, $pok->maxHP, $pok->maxCP, $pok->fleeRate, $pok->name); ?>
-                    </a>
-                    <?php
-                    if ($evolutions) {
-                        foreach ($evolutions as $evo_pok) {
-                            $link = model_pokemon::get_archive_page_link(). '?id=' .($evo_pok->name); ?>
-                            <a class="pok_link" href="<?php echo $link; ?>">
-                                <?php echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name); ?>
-                            </a>
-                        <?php }
+        $arch_query_link = model_pokemon::get_archive_page_link();
+        $path = parse_url($arch_query_link, PHP_URL_PATH); ?>
+            <div class="pokemons_arch_grid">
+                <?php
+                self::preloader();
+                if ($path == $_SERVER['REQUEST_URI']) {
+                    foreach ($filtered_poks as $pok) {
+                        $evolutions = $pok->evolutions;
+                        $link = model_pokemon::get_archive_page_link() . '?id=' . ($pok->name);
+                        echo '<div class="grid_item">';
+                            echo '<div class="slider_wrap">'; ?>
+                                <a class="pok_link" href="<?php echo $link; ?>">
+                                    <?php echo self::poks_markup($pok->image, $pok->maxHP, $pok->maxCP, $pok->fleeRate, $pok->name); ?>
+                                </a>
+                                <?php
+                                if ($evolutions) {
+                                    foreach ($evolutions as $evo_pok) {
+                                        $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok->name); ?>
+                                        <a class="pok_link" href="<?php echo $link; ?>">
+                                            <?php echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name); ?>
+                                        </a>
+                                    <?php }
+                                }
+                            echo '</div>';
+                        echo '</div>';
                     }
-                echo'</div>';
-            echo '</div>';
-            }
-            ?>
-            <div id="show_more" class="pokemon_cont show_more">
-                <a><?php echo __('Show More'); ?></a>
+                ?>
+                <div id="show_more" class="pokemon_cont show_more">
+                    <a><?php echo __('Show More'); ?></a>
+                </div>
+            <?php } ?>
             </div>
-        </div>
-        <?php
-
+            <?php
     }
     /*
      * outputs data from the earlier filtered array to the screen when "Show More" button si clicked (next 15 from array)
@@ -120,6 +203,23 @@ class view_pokemon {
                 echo'</div>';
             echo '</div>';
         }
+        die();
+    }
+
+    static function single_page_markup() {
+        $name = $_POST['name'];
+        $data = model_pokemon::get_pokemon_data_by_name($name);
+        $evolutions = $data->evolutions;
+        echo '<div class="grid_item">';
+            echo '<div class="single_page_slider">';
+                echo self::single_poks_markup($data,$data->image, $data->maxHP, $data->maxCP, $data->fleeRate, $data->name, $data->types, $data->weaknesses, $data->classification, $data->resistant);
+                if ($evolutions) {
+                    foreach ($evolutions as $evo_pok) {
+                        echo self::single_poks_markup($evo_pok, $evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name, $evo_pok->types, $evo_pok->weaknesses, $evo_pok->classification, $evo_pok->resistant);
+                    }
+                }
+            echo '</div>';
+        echo '</div>';
         die();
     }
 }

@@ -8,6 +8,8 @@ class model_pokemon {
         add_action('wp_enqueue_scripts', array(&$this, 'enqueues'));
         add_action('wp_ajax_load_more', array(&$this, 'poks_load'));
         add_action('wp_ajax_nopriv_load_more', array(&$this, 'poks_load'));
+        add_action('wp_ajax_to_single', array(&$this, 'single_page_output'));
+        add_action('wp_ajax_nopriv_to_single', array(&$this, 'single_page_output'));
 
     }
     function enqueues() {
@@ -72,12 +74,44 @@ class model_pokemon {
         maxCP
         fleeRate
         name
+        types
+        weaknesses
+        classification
+        resistant
+        attacks {
+          special {
+            name
+            type
+            damage
+          }
+          fast {
+            name
+            type
+            damage
+          }
+        }
         evolutions {
             image
             maxHP
             maxCP
             fleeRate
             name
+            types
+            weaknesses
+            classification
+            resistant
+            attacks {
+              special {
+                name
+                type
+                damage
+              }
+              fast {
+                name
+                type
+                damage
+              }
+            }
         }
       }
     }'
@@ -87,6 +121,19 @@ class model_pokemon {
         $ret = json_decode($ret['body']);
         $single_pokemon_data = $ret->data->pokemon;
         return $single_pokemon_data;
+    }
+    /*
+     * Pokemons attacks info array
+     * */
+    static function get_attacks_arr ($data) {
+        if ($data->attacks) {
+            $attacks_arr = array();
+            foreach ($data->attacks as $name => $attack) {
+                $attacks_arr[$name] = $attack;
+            }
+        }
+
+        return $attacks_arr;
     }
     /*
      * Get 1st stage evolution pokemons arrays from all pokemons data
@@ -178,6 +225,9 @@ class model_pokemon {
         $arch_page_id = self::current_page_id('%[poks_arch_single]%');
         $arch_page_link = get_page_link($arch_page_id);
         return $arch_page_link;
+    }
+    static function single_page_output () {
+      view_pokemon::single_page_markup();
     }
 }
 /*
