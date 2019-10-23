@@ -181,6 +181,73 @@
       background-color:rgb(255,255,255);
     }
   }
+  .pok_detailed {
+    h1 {
+      text-align: center;
+      padding-bottom: 40px;
+    }
+    .pok_detailed_info {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      @media (max-width: 650px) {
+        flex-direction: column;
+      }
+      .pok_detailed_info_attacks, .pok_detailed_info_attacks_other {
+        flex: 40%;
+        max-width: 40%;
+        @media (max-width: 1000px) {
+          flex: 50%;
+          max-width: initial;
+        }
+      }
+      h2 {
+        text-align: center;
+        padding-bottom: 30px;
+      }
+      .attacks_info {
+        display: flex;
+        justify-content: space-around;
+        @media (min-width: 1300px) {
+          padding: 0 50px;
+        }
+        .attack_type {
+          &:not(:first-child) {
+            margin-left: 20px;
+          }
+          h3 {
+            text-align: center;
+          }
+          .attack_type_list {
+            list-style-type: none;
+            padding-left: 0;
+            li {
+              &:first-child {
+                font-weight: bold;
+                text-align: center;
+              }
+            }
+          }
+        }
+      }
+      .pok_detailed_info_attacks_other {
+        .pok_detailed_info_attacks_other_list {
+          display: flex;
+          justify-content: center;
+          ul {
+            list-style-type: none;
+            padding-left: 0;
+            li {
+              span {
+                font-weight: bold;
+              }
+            }
+          }
+
+        }
+      }
+    }
+  }
   .grid_item {
     flex: 30%;
     max-width: 30%;
@@ -199,6 +266,21 @@
       .slick-prev, .slick-next {
         display: block !important;
       }
+    }
+    .slick-prev, .slick-next {
+      display: none !important;
+      z-index: 1;
+      top: 40%;
+    }
+    .slick-prev:before, .slick-next:before {
+      color: #e6ba5f;
+      font-size: 40px;
+    }
+    .slick-prev {
+      left: 0;
+    }
+    .slick-next {
+      right: 15px;
     }
     .pokemon_cont {
       position: relative;
@@ -258,21 +340,6 @@
       }
     }
   }
-  .slick-prev, .slick-next {
-    display: none !important;
-    z-index: 1;
-    top: 40%;
-  }
-  .slick-prev:before, .slick-next:before {
-    color: #e6ba5f;
-    font-size: 40px;
-  }
-  .slick-prev {
-    left: 0;
-  }
-  .slick-next {
-    right: 15px;
-  }
   .show_more, .arch_link {
     display: flex;
     flex: 30%;
@@ -329,6 +396,75 @@
           height: 100%;
           border-color: #e6ba5f;
         }
+      }
+    }
+  }
+  .slider_contaier {
+    padding: 20px 0;
+    @media (max-width: 600px) {
+      justify-content: center;
+      .slick-prev, .slick-next {
+        width: initial;
+        height: initial;
+        z-index: 1;
+      }
+      .slick-prev:before, .slick-next:before {
+        color: #e6ba5f;
+        font-size: 40px;
+      }
+    }
+    .single_page_slider {
+      max-width: 70%;
+      img {
+        margin: 0 auto;
+      }
+    }
+    .single_page_slider_nav {
+      max-width: 30%;
+      @media (max-width: 600px) {
+        display: none;
+      }
+      .slick-list {
+        min-height: 95%;
+      }
+      .pokemon_cont {
+        position: relative;
+        &:before {
+          content: '';
+          position: absolute;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0,0,0,0.5);
+          border-radius: 10px;
+        }
+      }
+      .slick-current {
+        .pokemon_cont {
+          position: relative;
+          &:before {
+            content: none;
+          }
+        }
+      }
+      .slick-prev, .slick-next {
+        width: initial;
+        height: initial;
+        z-index: 1;
+      }
+      .slick-prev {
+        transform: rotate(90deg);
+        top: 0;
+        left: 25%;
+      }
+      .slick-next {
+        top: 85%;
+        right: 50%;
+        transform: rotate(90deg);
+      }
+      .slick-prev:before, .slick-next:before {
+        color: #e6ba5f;
+        font-size: 40px;
       }
     }
   }

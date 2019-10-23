@@ -31,13 +31,57 @@
         });
     }
     /*
-     * This func execution will init slick slider
+    * equals sliders heights
+    * */
+     function fix_sliders_heights() {
+         var true_height = $('.single_page_slider').height();
+         $('.single_page_slider_nav').css('height', true_height);
+     }
+    /*
+     * This functions execution will init slick sliders
      * */
     function slick_init() {
-        $('.slider_wrap').slick();
+        $('.slider_wrap').slick({
+            infinite: false
+        });
     }
     function sp_slick_init() {
-        $('.single_page_slider').slick();
+        $('.single_page_slider').slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: false,
+            fade: true,
+            infinite: false,
+            asNavFor: '.single_page_slider_nav',
+            responsive: [{
+                breakpoint: 600,
+                settings: {
+                    arrows: true
+                }
+            }]
+        });
+    }
+    function sp_slick_nav_init() {
+        $('.single_page_slider_nav').slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            vertical: true,
+            asNavFor: '.single_page_slider',
+            centerMode: true,
+            centerPadding: '100px',
+            focusOnSelect: true,
+            infinite: false,
+            arrows: true,
+            responsive: [{
+                breakpoint: 1000,
+                settings: {
+                    centerPadding: '50px'
+                }
+            },{
+                breakpoint: 600,
+                settings: "unslick"
+            }]
+        });
     }
     /*
      * This func execution will destroy earlier initialized slick slider
@@ -117,18 +161,19 @@
                 success: function (data) {
                     $('#fountainG').css('display', 'none');
                     $('.pokemons_arch_grid').css('display', 'block').html(data);
-                    if ($(window).width() > 1200) {
-                        $('.grid_item').css({
-                            'max-width': '80%',
-                            'margin-left' : 'auto',
-                            'margin-right' : 'auto'
-                        });
-                    } else {
-                        $('.grid_item').css('max-width', '100%');
-                    }
-                    $('.pokemon_description').css('position', 'relative');
-                    sp_slick_init();
+                    $('.single_page_slider').css('max-width', '80%');
+                    $('.single_page_slider_nav').css({
+                        'max-width': '15%',
+                        'overflow': 'hidden'
+                    });
                     fixHeights();
+                    sp_slick_init();
+                    sp_slick_nav_init();
+                    fix_sliders_heights();
+                    $('.pokemons_arch_grid .slider_contaier').css({
+                        'display': 'flex',
+                        'flex-direction': 'row-reverse'
+                    });
                 }
             })
         }
