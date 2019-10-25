@@ -3,7 +3,7 @@
     * This func finds the highest element with chosen class and make other elements with the same class to be equal to it
     * */
     function fixHeights() {
-        var heights = new Array();
+        let heights = new Array();
 
         // Loop to get all element heights
         $('.pokemon_image').each(function() {
@@ -17,7 +17,7 @@
         });
 
         // Find max height of all elements
-        var max = Math.max.apply( Math, heights );
+        let max = Math.max.apply( Math, heights );
 
         // Set all heights to max height
         $('.pokemon_image').each(function() {
@@ -34,7 +34,7 @@
     * equals sliders heights
     * */
      function fix_sliders_heights() {
-         var true_height = $('.single_page_slider').height();
+         let true_height = $('.single_page_slider').height();
          $('.single_page_slider_nav').css('height', true_height);
      }
     /*
@@ -52,6 +52,7 @@
             arrows: false,
             fade: true,
             infinite: false,
+            verticalSwiping: true,
             asNavFor: '.single_page_slider_nav',
             responsive: [{
                 breakpoint: 600,
@@ -66,6 +67,7 @@
             slidesToShow: 1,
             slidesToScroll: 1,
             vertical: true,
+            verticalSwiping: true,
             asNavFor: '.single_page_slider',
             centerMode: true,
             centerPadding: '100px',
@@ -109,7 +111,7 @@
         $('#show_more').click(function( event ){
             event.preventDefault();
             $('#show_more a').text('loading...');
-            var data_arr = {
+            let data_arr = {
                 'action': 'load_more',
                 'query': fivemorepoksajax.poks_arr,
                 'offset': fivemorepoksajax.offset,
@@ -143,11 +145,11 @@
             window.location.href = event.currentTarget.attributes.href.nodeValue;
         });
 
-        var searchParams = new URLSearchParams(window.location.search);
-        var name = searchParams.get('id');
+        let searchParams = new URLSearchParams(window.location.search);
+        let name = searchParams.get('id');
 
         if (name) {
-            var data_arr = {
+            let data_arr = {
                 'action': 'to_single',
                 'name': name
             };
@@ -168,7 +170,15 @@
                     });
                     fixHeights();
                     sp_slick_init();
-                    sp_slick_nav_init();
+                    if ($('.single_page_slider_nav').children().length < 2) {
+                        $('.single_page_slider_nav').css('display', 'none');
+                        $('.single_page_slider').css({
+                            'max-width': '100%',
+                            'width': '100%'
+                        });
+                    } else {
+                        sp_slick_nav_init();
+                    }
                     fix_sliders_heights();
                     $('.pokemons_arch_grid .slider_contaier').css({
                         'display': 'flex',
@@ -177,10 +187,6 @@
                 }
             })
         }
-
-
-
-
         /*
          * Execute the upper func when window loads
          * */
@@ -195,7 +201,6 @@
                 }, 120);
             });
         });
-
 
         /* END --> document.ready */
     });

@@ -14,6 +14,7 @@ class model_pokemon {
     }
     function enqueues() {
         $filtered_poks_rest = array_slice(self::filtered_pokemons(), 15);
+        $json_data = self::get_data_from_file('coors.json');
         wp_enqueue_style( 'pokemon_page_styles', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/css/pokemon_page.css');
         wp_enqueue_style( 'slick_css', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick.css');
         wp_enqueue_style( 'slick_theme_css', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick-theme.css');
@@ -27,6 +28,7 @@ class model_pokemon {
                 'offset' => 0,
                 'length' => count($filtered_poks_rest),
                 'poks_arr' => $filtered_poks_rest,
+                'coors' => $json_data
 
             )
         );
@@ -138,8 +140,8 @@ class model_pokemon {
     /*
      * Get 1st stage evolution pokemons arrays from all pokemons data
      * */
-     static function filtered_pokemons() {
-        $schema = '{
+     static function filtered_pokemons($schema = null) {
+        $schema_default = '{
               pokemons(first:200) {
                 image
                 maxHP
@@ -155,7 +157,8 @@ class model_pokemon {
                 }
               }
             }';
-        $pokemons = self::get_pokemons_data($schema);
+        $true_schema = $schema ? $schema : $schema_default;
+        $pokemons = self::get_pokemons_data($true_schema);
         $filtered_poks = array();
         $evo_arr = self::evolutions_array();
         foreach ($pokemons as $key => $pokemon) {
@@ -193,12 +196,45 @@ class model_pokemon {
      * "poks_arch_single" shortcode handler
      * */
     function pokemons_arch_shortcode_handler() {
-//        var_dump(self::get_single_pok_link('some_name'));
+
         $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
         ob_start();
         view_pokemon::poks_archive_output( $filtered_poks );
         $out = ob_get_clean();
         return $out;
+    }
+
+    function random_numbers_arr_within_range($min, $max, $step) {
+        $numbers = range($min, $max, $step);
+        shuffle($numbers);
+        return $numbers;
+    }
+
+    function generate_coors_json_data() {
+        $schema = '{
+            pokemons(first: 200) {
+                name
+                evolutions {
+                     name
+                }
+          }
+        }';
+        $lat_arr = self::random_numbers_arr_within_range(44.36, 51.30,0.01);
+        $lng_arr = self::random_numbers_arr_within_range(22.18,37.48,0.01);
+        $data = self::filtered_pokemons($schema);
+        foreach ($data as $key => $pok) {
+            $pok->lat = $lat_arr[$key];
+            $pok->lng = $lng_arr[$key];
+        }
+        $fc = fopen(__DIR__ . '/assets/coors.json','w');
+        fwrite($fc, json_encode($data));
+        fclose($fc);
+    }
+
+    function get_data_from_file($file_name) {
+        $data_arr = file(__DIR__ . '/assets/' . $file_name);
+        $data_arr = $data_arr[0];
+        return $data_arr;
     }
     /*
      * ajax load more
@@ -228,6 +264,266 @@ class model_pokemon {
     }
     static function single_page_output () {
       view_pokemon::single_page_markup();
+    }
+    /*
+     * Initialize a map from google
+     * */
+    static function map_init () {
+        ?>
+        <script>
+            // Initialize and add the map
+            function initMap() {
+                const data_arr = JSON.parse(fivemorepoksajax.coors);
+                let searchParams = new URLSearchParams(window.location.search);
+                let name = searchParams.get('id');
+                let true_coors = {};
+                for (let i = 0; i < data_arr.length; i++) {
+                    for (let j=0; j<data_arr[i].evolutions.length; j++) {
+                        if (data_arr[i].name == name || data_arr[i].evolutions[j].name == name) {
+                            let lat = Number(data_arr[i].lat.toFixed(2));
+                            let lng = Number(data_arr[i].lng.toFixed(2));
+                            true_coors = {lat, lng};
+                        }
+                    }
+                }
+
+
+                let coors = true_coors;
+
+
+                // The map, centered at cors
+                let map = new google.maps.Map(
+                    document.getElementById('map'), {
+                        zoom: 7,
+                        center: coors,
+                        styles: [
+                            {
+                                "elementType": "geometry",
+                                "stylers": [
+                                    {
+                                        "color": "#ebe3cd"
+                                    }
+                                ]
+                            },
+                            {
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#523735"
+                                    }
+                                ]
+                            },
+                            {
+                                "elementType": "labels.text.stroke",
+                                "stylers": [
+                                    {
+                                        "color": "#f5f1e6"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "administrative",
+                                "elementType": "geometry.stroke",
+                                "stylers": [
+                                    {
+                                        "color": "#c9b2a6"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "administrative.land_parcel",
+                                "elementType": "geometry.stroke",
+                                "stylers": [
+                                    {
+                                        "color": "#dcd2be"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "administrative.land_parcel",
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#ae9e90"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "landscape.natural",
+                                "elementType": "geometry",
+                                "stylers": [
+                                    {
+                                        "color": "#dfd2ae"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "poi",
+                                "elementType": "geometry",
+                                "stylers": [
+                                    {
+                                        "color": "#dfd2ae"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "poi",
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#93817c"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "poi.park",
+                                "elementType": "geometry.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#a5b076"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "poi.park",
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#447530"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road",
+                                "elementType": "geometry",
+                                "stylers": [
+                                    {
+                                        "color": "#f5f1e6"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road.arterial",
+                                "elementType": "geometry",
+                                "stylers": [
+                                    {
+                                        "color": "#fdfcf8"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road.highway",
+                                "elementType": "geometry",
+                                "stylers": [
+                                    {
+                                        "color": "#f8c967"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road.highway",
+                                "elementType": "geometry.stroke",
+                                "stylers": [
+                                    {
+                                        "color": "#e9bc62"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road.highway.controlled_access",
+                                "elementType": "geometry",
+                                "stylers": [
+                                    {
+                                        "color": "#e98d58"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road.highway.controlled_access",
+                                "elementType": "geometry.stroke",
+                                "stylers": [
+                                    {
+                                        "color": "#db8555"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road.local",
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#806b63"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "transit.line",
+                                "elementType": "geometry",
+                                "stylers": [
+                                    {
+                                        "color": "#dfd2ae"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "transit.line",
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#8f7d77"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "transit.line",
+                                "elementType": "labels.text.stroke",
+                                "stylers": [
+                                    {
+                                        "color": "#ebe3cd"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "transit.station",
+                                "elementType": "geometry",
+                                "stylers": [
+                                    {
+                                        "color": "#dfd2ae"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "water",
+                                "elementType": "geometry.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#b9d3c2"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "water",
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#92998d"
+                                    }
+                                ]
+                            }
+                        ]
+                    });
+                // The marker, positioned at cors
+                let marker = new google.maps.Marker({
+                    position: coors,
+                    map: map,
+                    title: name,
+                    animation: google.maps.Animation.BOUNCE,
+                    icon: 'http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png'
+                });
+            }
+        </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaawMpqt4K0p0D2IFqSWOQmphuNblK0aM&callback=initMap"></script>
+        <?php
     }
 }
 /*

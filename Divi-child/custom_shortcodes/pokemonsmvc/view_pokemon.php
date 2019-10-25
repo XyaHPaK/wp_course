@@ -182,7 +182,7 @@ class view_pokemon {
                                 foreach ($evolutions as $evo_pok) {
                                     $link = model_pokemon::get_archive_page_link(). '?id=' .($evo_pok->name); ?>
                                     <a href="<?php echo $link; ?>">
-                                    <?php echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name); ?>
+                                        <?php echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name); ?>
                                     </a>
                                 <?php }
                             }
@@ -260,12 +260,18 @@ class view_pokemon {
         $sliced_poks_arr = array_slice($poks_arr, $offset, 15);
         foreach ($sliced_poks_arr as $pok) {
             $evolutions = $pok['evolutions'];
+            $link = model_pokemon::get_archive_page_link() . '?id=' . ($pok->name);
             echo '<div class="grid_item">';
                 echo '<div class="slider_wrap">';
-                    echo self::poks_markup($pok['image'], $pok['maxHP'], $pok['maxCP'], $pok['fleeRate'], $pok['name']);
+                    ?><a class="pok_link" href="<?php echo $link; ?>"><?php
+                        echo self::poks_markup($pok['image'], $pok['maxHP'], $pok['maxCP'], $pok['fleeRate'], $pok['name']);
+                    ?></a><?php
                     if ($evolutions) {
                         foreach ($evolutions as $evo_pok) {
-                            echo self::poks_markup($evo_pok['image'], $evo_pok['maxHP'], $evo_pok['maxCP'], $evo_pok['fleeRate'], $evo_pok['name']);
+                            $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok['name']);
+                            ?><a class="pok_link" href="<?php echo $link; ?>"><?php
+                                echo self::poks_markup($evo_pok['image'], $evo_pok['maxHP'], $evo_pok['maxCP'], $evo_pok['fleeRate'], $evo_pok['name']);
+                            ?></a><?php
                         }
                     }
                 echo'</div>';
@@ -273,6 +279,7 @@ class view_pokemon {
         }
         die();
     }
+
     /*
      * single page output
      * */
@@ -301,6 +308,8 @@ class view_pokemon {
         echo  '<div class="pok_detailed">';
             self::single_page_info_markup($data->maxHP , $data->maxCP, $data->fleeRate, $data->name, $data->types, $data->weaknesses, $data->classification, $data->resistant, $data->attacks);
         echo '</div>';
+        echo '<div id="map"></div>';
+        model_pokemon::map_init();
         die();
     }
 }

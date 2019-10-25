@@ -352,5 +352,7 @@
       .pokemons_arch_grid .slider_contaier .single_page_slider_nav .slick-prev:before, .pokemons_arch_grid .slider_contaier .single_page_slider_nav .slick-next:before {
         color: #e6ba5f;
         font-size: 40px; }
+  .pokemons_arch_grid #map {
+    height: 400px; }
 
 /*# sourceMappingURL=pokemon_page.css.map */
