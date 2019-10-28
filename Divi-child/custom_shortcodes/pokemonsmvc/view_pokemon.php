@@ -167,7 +167,7 @@ class view_pokemon {
         $names_arr = explode(' ', $names);
         $arch_link = model_pokemon::get_archive_page_link();
         if ($names !== '') { ?>
-            <div class="pokemons_arch_grid">
+            <div class="custom_poks">
             <?php foreach ($names_arr as $name) {
                 $data = model_pokemon::get_pokemon_data_by_name($name);
                 $link = model_pokemon::get_archive_page_link(). '?id=' .($data->name);
@@ -219,13 +219,24 @@ class view_pokemon {
     static function poks_archive_output( $filtered_poks ) {
         $arch_query_link = model_pokemon::get_archive_page_link();
         $path = parse_url($arch_query_link, PHP_URL_PATH); ?>
-            <div class="pokemons_arch_grid">
+            <div class="pokemons">
+                <?php self::preloader(); ?>
+                <?php if ($path == $_SERVER['REQUEST_URI']) { ?>
+                <div class="above_content">
+                    <div class="poks_quantity">
+                        <span><?php echo count($filtered_poks) . __(' Pokemons Shown'); ?></span>
+                    </div>
+                    <div class="view_buttons">
+                        <button disabled>grid</button>
+                        <button>map</button>
+                    </div>
+                </div>
+
+                <div class="pokemons_arch_grid">
                 <?php
-                self::preloader();
-                if ($path == $_SERVER['REQUEST_URI']) {
                     foreach ($filtered_poks as $pok) {
                         $evolutions = $pok->evolutions;
-                        $link = model_pokemon::get_archive_page_link() . '?id=' . ($pok->name);
+                        $link = $arch_query_link . '?id=' . ($pok->name);
                         echo '<div class="grid_item">';
                             echo '<div class="slider_wrap">'; ?>
                                 <a class="pok_link" href="<?php echo $link; ?>">
@@ -234,7 +245,7 @@ class view_pokemon {
                                 <?php
                                 if ($evolutions) {
                                     foreach ($evolutions as $evo_pok) {
-                                        $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok->name); ?>
+                                        $link = $arch_query_link . '?id=' . ($evo_pok->name); ?>
                                         <a class="pok_link" href="<?php echo $link; ?>">
                                             <?php echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name); ?>
                                         </a>
@@ -248,6 +259,7 @@ class view_pokemon {
                     <a><?php echo __('Show More'); ?></a>
                 </div>
             <?php } ?>
+                </div>
             </div>
             <?php
     }
@@ -260,7 +272,7 @@ class view_pokemon {
         $sliced_poks_arr = array_slice($poks_arr, $offset, 15);
         foreach ($sliced_poks_arr as $pok) {
             $evolutions = $pok['evolutions'];
-            $link = model_pokemon::get_archive_page_link() . '?id=' . ($pok->name);
+            $link = model_pokemon::get_archive_page_link() . '?id=' . $pok['name'];
             echo '<div class="grid_item">';
                 echo '<div class="slider_wrap">';
                     ?><a class="pok_link" href="<?php echo $link; ?>"><?php
@@ -268,7 +280,7 @@ class view_pokemon {
                     ?></a><?php
                     if ($evolutions) {
                         foreach ($evolutions as $evo_pok) {
-                            $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok['name']);
+                            $link = model_pokemon::get_archive_page_link() . '?id=' . $evo_pok['name'];
                             ?><a class="pok_link" href="<?php echo $link; ?>"><?php
                                 echo self::poks_markup($evo_pok['image'], $evo_pok['maxHP'], $evo_pok['maxCP'], $evo_pok['fleeRate'], $evo_pok['name']);
                             ?></a><?php
@@ -308,8 +320,25 @@ class view_pokemon {
         echo  '<div class="pok_detailed">';
             self::single_page_info_markup($data->maxHP , $data->maxCP, $data->fleeRate, $data->name, $data->types, $data->weaknesses, $data->classification, $data->resistant, $data->attacks);
         echo '</div>';
-        echo '<div id="map"></div>';
+        if ($evolutions) {
+            echo '<div class="pok_evo">';
+                echo '<h2>' . __('Next Evolution Stages') . '</h2>';
+                echo '<div class="pok_evo_wrap">';
+                    foreach ($evolutions as $evo_pok) {
+                        $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok->name);
+                      ?>
+                        <a class="pok_evo_item .pok_link" href="<?php echo $link; ?>">
+                            <img src="<?php echo $evo_pok->image; ?>" alt="<?php echo $evo_pok->image; ?>">
+                            <span><?php echo $evo_pok->name ?></span>
+                        </a>
+                        <?php
+                    }
+                echo '</div>';
+            echo '</div>';
+        }
+        echo '<div class="map" id="map"></div>';
         model_pokemon::map_init();
+        ?><a class ="print-doc" href="javascript:(print());"><?php echo __('Get/Print PDF'); ?></a><?php
         die();
     }
 }

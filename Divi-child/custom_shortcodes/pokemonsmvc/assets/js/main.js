@@ -70,19 +70,10 @@
             verticalSwiping: true,
             asNavFor: '.single_page_slider',
             centerMode: true,
-            centerPadding: '100px',
+            centerPadding: false,
             focusOnSelect: true,
             infinite: false,
-            arrows: true,
-            responsive: [{
-                breakpoint: 1000,
-                settings: {
-                    centerPadding: '50px'
-                }
-            },{
-                breakpoint: 600,
-                settings: "unslick"
-            }]
+            arrows: true
         });
     }
     /*
@@ -162,13 +153,10 @@
                 },
                 success: function (data) {
                     $('#fountainG').css('display', 'none');
-                    $('.pokemons_arch_grid').css('display', 'block').html(data);
-                    $('.single_page_slider').css('max-width', '80%');
-                    $('.single_page_slider_nav').css({
-                        'max-width': '15%',
-                        'overflow': 'hidden'
-                    });
+                    $('.pokemons').show().html(data);
                     fixHeights();
+                },
+                complete: function () {
                     sp_slick_init();
                     if ($('.single_page_slider_nav').children().length < 2) {
                         $('.single_page_slider_nav').css('display', 'none');
@@ -180,13 +168,16 @@
                         sp_slick_nav_init();
                     }
                     fix_sliders_heights();
-                    $('.pokemons_arch_grid .slider_contaier').css({
-                        'display': 'flex',
-                        'flex-direction': 'row-reverse'
-                    });
                 }
             })
         }
+
+        $('.view_buttons button').on('click', function () {
+            $('.view_buttons').children().map(function () {
+                $('.view_buttons button').prop('disabled', false);
+            });
+            $(this).prop('disabled',true);
+        });
         /*
          * Execute the upper func when window loads
          * */
