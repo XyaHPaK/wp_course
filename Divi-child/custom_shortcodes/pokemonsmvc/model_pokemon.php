@@ -10,10 +10,13 @@ class model_pokemon {
         add_action('wp_ajax_nopriv_load_more', array(&$this, 'poks_load'));
         add_action('wp_ajax_to_single', array(&$this, 'single_page_output'));
         add_action('wp_ajax_nopriv_to_single', array(&$this, 'single_page_output'));
+        add_action('wp_ajax_to_map', array(&$this, 'map_view_output'));
+        add_action('wp_ajax_nopriv_to_map', array(&$this, 'map_view_output'));
+
 
     }
     function enqueues() {
-        $filtered_poks_rest = array_slice(self::filtered_pokemons(), 15);
+        $filtered_poks = self::filtered_pokemons();
         $json_data = self::get_data_from_file('coors.json');
         wp_enqueue_style( 'pokemon_page_styles', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/css/pokemon_page.css');
         wp_enqueue_style( 'slick_css', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick.css');
@@ -21,13 +24,13 @@ class model_pokemon {
 
         wp_register_script('slick_min_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick.min.js', array('jquery'));
         wp_enqueue_script('main_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/js/main.js', array('jquery', 'slick_min_js'));
-        wp_localize_script('main_js', 'fivemorepoksajax',
+        wp_localize_script('main_js', 'ajaxarr',
             array(
 
                 'ajaxurl' => admin_url( 'admin-ajax.php' ),
                 'offset' => 0,
-                'length' => count($filtered_poks_rest),
-                'poks_arr' => $filtered_poks_rest,
+                'length' => count($filtered_poks) - 15, // length for sliced array in ajax handler (without first 15 values)
+                'poks_arr' => $filtered_poks,
                 'coors' => $json_data
 
             )
@@ -209,7 +212,9 @@ class model_pokemon {
         shuffle($numbers);
         return $numbers;
     }
-
+    /*
+     * Generate random coordinates within range and create/rewrite coors.json with that data in it
+     * */
     function generate_coors_json_data() {
         $schema = '{
             pokemons(first: 200) {
@@ -230,7 +235,9 @@ class model_pokemon {
         fwrite($fc, json_encode($data));
         fclose($fc);
     }
-
+    /*
+     * Add data from json file to array
+     * */
     function get_data_from_file($file_name) {
         $data_arr = file(__DIR__ . '/assets/' . $file_name);
         $data_arr = $data_arr[0];
@@ -262,18 +269,66 @@ class model_pokemon {
         $arch_page_link = get_page_link($arch_page_id);
         return $arch_page_link;
     }
-    static function single_page_output () {
+    /*
+     * for ajax, executes single page markup
+     * */
+    static function single_page_output() {
       view_pokemon::single_page_markup();
+    }
+    /*
+     *
+     * */
+    function map_view_output() {
+//        $data = $_POST['query'];
+//        $arch_query_link = model_pokemon::get_archive_page_link();
+        $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
+//        view_pokemon::poks_archive_output( $filtered_poks );
+        view_pokemon::poks_archive_map_output($filtered_poks);
+        die();
     }
     /*
      * Initialize a map from google
      * */
-    static function map_init () {
+    static function arch_map_init() {
+        ?>
+        <script type="text/javascript">
+            function initMap() {
+                let locations = JSON.parse(ajaxarr.coors);
+//                console.log(locations[0].lat);
+                let map = new google.maps.Map(document.getElementById('map_arch'), {
+                    zoom: 5,
+                    center: new google.maps.LatLng(49.34, 34.34),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+
+                let infowindow = new google.maps.InfoWindow();
+
+                let marker, i;
+
+                for (i = 0; i < locations.length; i++) {
+                    marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(locations[i].lat, locations[i].lng),
+                        map: map
+                    });
+
+                    google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                        return function () {
+                            infowindow.setContent(locations[i][0]);
+                            infowindow.open(map, marker);
+                        }
+                    })(marker, i));
+                }
+            }
+        </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaawMpqt4K0p0D2IFqSWOQmphuNblK0aM&callback=initMap"></script>
+        <?php
+    }
+    static function single_map_init () {
         ?>
         <script>
             // Initialize and add the map
             function initMap() {
-                const data_arr = JSON.parse(fivemorepoksajax.coors);
+                const data_arr = JSON.parse(ajaxarr.coors);
                 let searchParams = new URLSearchParams(window.location.search);
                 let name = searchParams.get('id');
                 let true_coors = {};

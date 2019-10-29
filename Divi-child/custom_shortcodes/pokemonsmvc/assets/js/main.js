@@ -104,12 +104,12 @@
             $('#show_more a').text('loading...');
             let data_arr = {
                 'action': 'load_more',
-                'query': fivemorepoksajax.poks_arr,
-                'offset': fivemorepoksajax.offset,
-                'length': fivemorepoksajax.length
+                'query': ajaxarr.poks_arr,
+                'offset': ajaxarr.offset,
+                'length': ajaxarr.length
             };
             $.ajax({
-                url:fivemorepoksajax.ajaxurl,
+                url:ajaxarr.ajaxurl,
                 data:data_arr,
                 type:'POST',
                 success:function(data){
@@ -117,8 +117,8 @@
                         destroy_slick();
                         $('#show_more a').text('Show More');
                         $('#show_more').before(data);
-                        fivemorepoksajax.offset = Number(fivemorepoksajax.offset) + 15;
-                        if (fivemorepoksajax.offset >= fivemorepoksajax.length) $("#show_more").remove();
+                        ajaxarr.offset = Number(ajaxarr.offset) + 15;
+                        if (ajaxarr.offset >= ajaxarr.length) $("#show_more").remove();
                         slick_init();
                     } else {
                         $('#show_more').remove();
@@ -131,21 +131,24 @@
             });
         });
 
+        /*Redirect after click event*/
         $('.pok_link').click(function ( event ) {
             event.preventDefault();
             window.location.href = event.currentTarget.attributes.href.nodeValue;
         });
-
+        /*Getting name from URLSearchParams (id param)*/
         let searchParams = new URLSearchParams(window.location.search);
         let name = searchParams.get('id');
-
+        /*
+        * Starts below when URLSearchParams has id param
+        * */
         if (name) {
             let data_arr = {
                 'action': 'to_single',
                 'name': name
             };
             $.ajax({
-                url: fivemorepoksajax.ajaxurl,
+                url: ajaxarr.ajaxurl,
                 data: data_arr,
                 type: 'POST',
                 beforeSend: function () {
@@ -171,7 +174,9 @@
                 }
             })
         }
-
+        /*
+        * Makes all children to be enabled besides clicked one after this event
+        * */
         $('.view_buttons button').on('click', function () {
             $('.view_buttons').children().map(function () {
                 $('.view_buttons button').prop('disabled', false);
@@ -179,7 +184,37 @@
             $(this).prop('disabled',true);
         });
         /*
-         * Execute the upper func when window loads
+        *
+        * */
+        $('.map_btn').on('click', function () {
+            let data_arr = {
+                'action': 'to_map',
+                'query': ajaxarr.poks_arr,
+                'offset': ajaxarr.offset,
+                'length': ajaxarr.length
+            };
+            $.ajax({
+                url: ajaxarr.ajaxurl,
+                data: data_arr,
+                type: 'POST',
+                beforeSend: function () {
+                    $('#fountainG').css('display', 'block');
+                },
+                success: function (data) {
+                    $('#fountainG').css('display', 'none');
+
+                    $('.pokemons_arch_grid').hide().html(data).show();
+                },
+                complete: function () {
+                    slick_init();
+                    setTimeout(fixHeights, 100);
+
+
+                }
+            })
+        });
+        /*
+         * Executes fixHeights func when window loads
          * */
         $(window).load(function() {
             // Fix heights on page load

@@ -214,6 +214,36 @@ class view_pokemon {
         <?php
     }
     /*
+     *
+     * */
+    static function archive_page_items_markup($filtered_poks, $arch_query_link) {
+        foreach ($filtered_poks as $pok) {
+            $evolutions = $pok->evolutions;
+            $link = $arch_query_link . '?id=' . ($pok->name);
+            echo '<div class="grid_item">';
+            echo '<div class="slider_wrap">'; ?>
+            <a class="pok_link" href="<?php echo $link; ?>">
+                <?php echo self::poks_markup($pok->image, $pok->maxHP, $pok->maxCP, $pok->fleeRate, $pok->name); ?>
+            </a>
+            <?php
+            if ($evolutions) {
+                foreach ($evolutions as $evo_pok) {
+                    $link = $arch_query_link . '?id=' . ($evo_pok->name); ?>
+                    <a class="pok_link" href="<?php echo $link; ?>">
+                        <?php echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name); ?>
+                    </a>
+                <?php }
+            }
+            echo '</div>';
+            echo '</div>';
+        }
+        ?>
+        <div id="show_more" class="pokemon_cont show_more">
+            <a><?php echo __('Show More'); ?></a>
+        </div>
+        <?php
+    }
+    /*
      * outputs data from the earlier filtered array to the screen (only first 15 from array)
      * */
     static function poks_archive_output( $filtered_poks ) {
@@ -227,48 +257,35 @@ class view_pokemon {
                         <span><?php echo count($filtered_poks) . __(' Pokemons Shown'); ?></span>
                     </div>
                     <div class="view_buttons">
-                        <button disabled>grid</button>
-                        <button>map</button>
+                        <button class="grid_btn" disabled><?php echo __('grid'); ?></button>
+                        <button class="map_btn"><?php echo __('map'); ?></button>
                     </div>
                 </div>
 
                 <div class="pokemons_arch_grid">
                 <?php
-                    foreach ($filtered_poks as $pok) {
-                        $evolutions = $pok->evolutions;
-                        $link = $arch_query_link . '?id=' . ($pok->name);
-                        echo '<div class="grid_item">';
-                            echo '<div class="slider_wrap">'; ?>
-                                <a class="pok_link" href="<?php echo $link; ?>">
-                                    <?php echo self::poks_markup($pok->image, $pok->maxHP, $pok->maxCP, $pok->fleeRate, $pok->name); ?>
-                                </a>
-                                <?php
-                                if ($evolutions) {
-                                    foreach ($evolutions as $evo_pok) {
-                                        $link = $arch_query_link . '?id=' . ($evo_pok->name); ?>
-                                        <a class="pok_link" href="<?php echo $link; ?>">
-                                            <?php echo self::poks_markup($evo_pok->image, $evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name); ?>
-                                        </a>
-                                    <?php }
-                                }
-                            echo '</div>';
-                        echo '</div>';
-                    }
-                ?>
-                <div id="show_more" class="pokemon_cont show_more">
-                    <a><?php echo __('Show More'); ?></a>
-                </div>
-            <?php } ?>
+                   self::archive_page_items_markup($filtered_poks, $arch_query_link);
+                } ?>
                 </div>
             </div>
             <?php
+    }
+    static function poks_archive_map_output($filtered_poks) {
+        $arch_query_link = model_pokemon::get_archive_page_link();
+        echo '<div class="pokemons_arch_grid_items">';
+        self::archive_page_items_markup($filtered_poks, $arch_query_link);
+        echo '</div>';
+        echo '<div class="pokemons_arch_grid_map">';
+        echo '<div id="map_arch"></div>';
+        model_pokemon::arch_map_init();
+        echo '<div class="pokemons_arch_grid_map">';
     }
     /*
      * outputs data from the earlier filtered array to the screen when "Show More" button si clicked (next 15 from array)
      * */
     static function poks_load_more() {
         $offset = $_POST['offset'];
-        $poks_arr = $_POST['query'];
+        $poks_arr = array_slice($_POST['query'],15);
         $sliced_poks_arr = array_slice($poks_arr, $offset, 15);
         foreach ($sliced_poks_arr as $pok) {
             $evolutions = $pok['evolutions'];
@@ -337,7 +354,7 @@ class view_pokemon {
             echo '</div>';
         }
         echo '<div class="map" id="map"></div>';
-        model_pokemon::map_init();
+        model_pokemon::single_map_init();
         ?><a class ="print-doc" href="javascript:(print());"><?php echo __('Get/Print PDF'); ?></a><?php
         die();
     }

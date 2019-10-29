@@ -379,6 +379,28 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
+  margin: 20px 0;
+  .pokemons_arch_grid_items {
+    display: flex;
+    max-width: 25%;
+    flex-direction: column;
+    max-height: 600px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    .grid_item, .show_more {
+      max-width: initial;
+      flex: initial;
+      margin: 10px 0;
+    }
+
+  }
+  .pokemons_arch_grid_map {
+    max-width: 75%;
+    width: 75%;
+    #map_arch {
+      height: 600px;
+    }
+  }
   .grid_item {
     flex: 30%;
     max-width: 30%;
