@@ -207,9 +207,6 @@
                 },
                 complete: function () {
                     slick_init();
-                    setTimeout(fixHeights, 100);
-
-
                 }
             })
         });
@@ -220,12 +217,14 @@
             // Fix heights on page load
             fixHeights();
             // Fix heights on window resize
-            $(window).resize(function() {
-                // Needs to be a timeout function so it doesn't fire every ms of resize
-                setTimeout(function() {
-                    fixHeights();
-                }, 120);
-            });
+            if (!$('.pokemons_arch_grid_items')) {
+                $(window).resize(function() {
+                    // Needs to be a timeout function so it doesn't fire every ms of resize
+                    setTimeout(function() {
+                        fixHeights();
+                    }, 120);
+                });
+            }
         });
 
         /* END --> document.ready */

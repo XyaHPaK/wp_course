@@ -279,10 +279,7 @@ class model_pokemon {
      *
      * */
     function map_view_output() {
-//        $data = $_POST['query'];
-//        $arch_query_link = model_pokemon::get_archive_page_link();
         $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
-//        view_pokemon::poks_archive_output( $filtered_poks );
         view_pokemon::poks_archive_map_output($filtered_poks);
         die();
     }
@@ -292,33 +289,113 @@ class model_pokemon {
     static function arch_map_init() {
         ?>
         <script type="text/javascript">
+
+
             function initMap() {
                 let locations = JSON.parse(ajaxarr.coors);
-//                console.log(locations[0].lat);
+                let offset = 15 + Number(ajaxarr.offset);
+                let first_locations = locations.splice(0, offset);
                 let map = new google.maps.Map(document.getElementById('map_arch'), {
                     zoom: 5,
                     center: new google.maps.LatLng(49.34, 34.34),
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    markers: []
                 });
 
                 let infowindow = new google.maps.InfoWindow();
 
                 let marker, i;
 
-                for (i = 0; i < locations.length; i++) {
+                for (i = 0; i < first_locations.length; i++) {
                     marker = new google.maps.Marker({
-                        position: new google.maps.LatLng(locations[i].lat, locations[i].lng),
-                        map: map
+                        position: new google.maps.LatLng(first_locations[i].lat, first_locations[i].lng),
+                        map: map,
+                        icon: 'http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png',
+                        title: first_locations[i].name
                     });
+                    map.markers.push(marker);
 
                     google.maps.event.addListener(marker, 'click', (function (marker, i) {
                         return function () {
-                            infowindow.setContent(locations[i][0]);
+                            let image = document.querySelectorAll('[data-name="' + first_locations[i].name + '"]')[0].innerHTML;
+                            let desc = document.querySelectorAll('[data-desc="' + first_locations[i].name + '"]')[0].innerHTML;
+                            infowindow.setContent(image + desc);
                             infowindow.open(map, marker);
                         }
                     })(marker, i));
+                    google.maps.event.addListener(marker, 'mouseover', (function () {
+                        this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/pikachu_icon.png');
+                        this.setZIndex(google.maps.Marker.MAX_ZINDEX);
+                    }));
+                    google.maps.event.addListener(marker, 'mouseout', (function () {
+                        this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
+                    }));
                 }
+                (function($){
+                    $(document).ready(function() {
+                        $('.pokemon_cont').on('hover', function () {
+                            let name = $(this).attr('data-name');
+                            $.each(map.markers, function () {
+                                this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
+                                if(this['title'] == name) {
+                                    this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/pikachu_icon.png');
+                                    this.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                                }
+                            })
+                        });
+                    });
+                })(jQuery);
             }
+            (function($){
+                $(document).ready(function() {
+                    /*
+                     * This func execution will destroy earlier initialized slick slider
+                     * */
+                    function destroy_slick() {
+                        if ($('.slider_wrap').hasClass('slick-initialized')) {
+                            $('.slider_wrap').slick('destroy');
+                        }
+                    }
+                    /*
+                     * This functions execution will init slick sliders
+                     * */
+                    function slick_init() {
+                        $('.slider_wrap').slick({
+                            infinite: false
+                        });
+                    }
+                    $('#show_more').click(function( event ){
+                        event.preventDefault();
+                        $('#show_more a').text('loading...');
+                        let data_arr = {
+                            'action': 'load_more',
+                            'query': ajaxarr.poks_arr,
+                            'offset': ajaxarr.offset,
+                            'length': ajaxarr.length
+                        };
+                        $.ajax({
+                            url:ajaxarr.ajaxurl,
+                            data:data_arr,
+                            type:'POST',
+                            success:function(data){
+                                if( data ) {
+                                    destroy_slick();
+                                    $('#show_more a').text('Show More');
+                                    $('#show_more').before(data);
+                                    ajaxarr.offset = Number(ajaxarr.offset) + 15;
+                                    if (ajaxarr.offset >= ajaxarr.length) $("#show_more").remove();
+                                    slick_init();
+                                } else {
+                                    $('#show_more').remove();
+                                }
+                            },
+                            complete: function () {
+                                initMap();
+                            }
+                        });
+                    });
+                });
+            })(jQuery);
         </script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaawMpqt4K0p0D2IFqSWOQmphuNblK0aM&callback=initMap"></script>
         <?php
