@@ -5,25 +5,34 @@ class model_pokemon {
 
         add_shortcode('poks_arch_single', array( &$this, 'pokemons_arch_shortcode_handler' ));
         add_shortcode('custom_poks', array( &$this, 'custom_poks_handler' ));
+        add_shortcode('poks_filter', array(&$this, 'filtering_shortcode_handler'));
         add_action('wp_enqueue_scripts', array(&$this, 'enqueues'));
+        add_action('wp_enqueue_scripts', array(&$this, 'localize'));
         add_action('wp_ajax_load_more', array(&$this, 'poks_load'));
         add_action('wp_ajax_nopriv_load_more', array(&$this, 'poks_load'));
         add_action('wp_ajax_to_single', array(&$this, 'single_page_output'));
         add_action('wp_ajax_nopriv_to_single', array(&$this, 'single_page_output'));
         add_action('wp_ajax_to_map', array(&$this, 'map_view_output'));
         add_action('wp_ajax_nopriv_to_map', array(&$this, 'map_view_output'));
+        add_action('wp_ajax_to_grid', array(&$this, 'grid_view_output'));
+        add_action('wp_ajax_nopriv_to_grid', array(&$this, 'grid_view_output'));
 
 
     }
     function enqueues() {
-        $filtered_poks = self::filtered_pokemons();
-        $json_data = self::get_data_from_file('coors.json');
         wp_enqueue_style( 'pokemon_page_styles', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/css/pokemon_page.css');
         wp_enqueue_style( 'slick_css', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick.css');
         wp_enqueue_style( 'slick_theme_css', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick-theme.css');
+        wp_enqueue_style( 'jquery_ui_css', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/jquery-ui/jquery-ui.css');
 
+        wp_enqueue_script('jquery_ui_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/jquery-ui/jquery-ui.js', array('jquery'));
         wp_register_script('slick_min_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick.min.js', array('jquery'));
         wp_enqueue_script('main_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/js/main.js', array('jquery', 'slick_min_js'));
+
+    }
+    function localize() {
+        $filtered_poks = self::filtered_pokemons();
+        $json_data = self::get_data_from_file('coors.json');
         wp_localize_script('main_js', 'ajaxarr',
             array(
 
@@ -206,7 +215,18 @@ class model_pokemon {
         $out = ob_get_clean();
         return $out;
     }
-
+    /*
+     * "poks_filter" shortcode handler
+     * */
+    function filtering_shortcode_handler() {
+        ob_start();
+        view_pokemon::filter_markup();
+        $out = ob_get_clean();
+        return $out;
+    }
+    /*
+     * Generate array with random shufled numbers with custom range and step
+     * */
     function random_numbers_arr_within_range($min, $max, $step) {
         $numbers = range($min, $max, $step);
         shuffle($numbers);
@@ -283,6 +303,12 @@ class model_pokemon {
         view_pokemon::poks_archive_map_output($filtered_poks);
         die();
     }
+    function grid_view_output() {
+        $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
+        $link = self::get_archive_page_link();
+        view_pokemon::archive_page_items_markup($filtered_poks,$link);
+        die();
+    }
     /*
      * Initialize a map from google
      * */
@@ -297,8 +323,10 @@ class model_pokemon {
                 let first_locations = locations.splice(0, offset);
                 let map = new google.maps.Map(document.getElementById('map_arch'), {
                     zoom: 5,
-                    center: new google.maps.LatLng(49.34, 34.34),
+                    center: new google.maps.LatLng(48, 31),
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    disableDefaultUI: true,
+                    zoomControl: true,
                     markers: []
                 });
 
@@ -323,6 +351,9 @@ class model_pokemon {
                             infowindow.open(map, marker);
                         }
                     })(marker, i));
+                    google.maps.event.addListener(map, 'click', function() {
+                            infowindow.close();
+                    });
                     google.maps.event.addListener(marker, 'mouseover', (function () {
                         this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/pikachu_icon.png');
                         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
@@ -364,7 +395,8 @@ class model_pokemon {
                             infinite: false
                         });
                     }
-                    $('#show_more').click(function( event ){
+                    $('#show_more').click(function ( event ){
+                        let count = 15;
                         event.preventDefault();
                         $('#show_more a').text('loading...');
                         let data_arr = {
@@ -383,7 +415,14 @@ class model_pokemon {
                                     $('#show_more a').text('Show More');
                                     $('#show_more').before(data);
                                     ajaxarr.offset = Number(ajaxarr.offset) + 15;
-                                    if (ajaxarr.offset >= ajaxarr.length) $("#show_more").remove();
+                                    if (ajaxarr.offset >= ajaxarr.length) {
+                                        count += Number(ajaxarr.length);
+                                        $('.counter').text(count);
+                                        $("#show_more").remove();
+                                    } else {
+                                        count += Number(ajaxarr.offset);
+                                        $('.counter').text(count);
+                                    }
                                     slick_init();
                                 } else {
                                     $('#show_more').remove();
@@ -428,6 +467,8 @@ class model_pokemon {
                     document.getElementById('map'), {
                         zoom: 7,
                         center: coors,
+                        disableDefaultUI: true,
+                        zoomControl: true,
                         styles: [
                             {
                                 "elementType": "geometry",
@@ -661,6 +702,6 @@ class model_pokemon {
 /*
  * shortcode existence checking
  * */
-if (model_pokemon::current_page_id('%[poks_arch_single]%') || model_pokemon::current_page_id('%[custom_poks%')) {
+if (model_pokemon::current_page_id('%[poks_arch_single]%') || model_pokemon::current_page_id('%[custom_poks%') || model_pokemon::current_page_id('%[poks_filter]%')) {
     new model_pokemon();
 }

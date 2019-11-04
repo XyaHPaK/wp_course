@@ -1,101 +1,109 @@
-.pokemons #fountainG {
-  position: relative;
-  width: 234px;
-  height: 28px;
-  margin: auto;
-  display: none; }
-.pokemons .fountainG {
+.pokemons .preloader {
+  display: none;
   position: absolute;
   top: 0;
-  background-color: black;
-  width: 28px;
-  height: 28px;
-  animation-name: bounce_fountainG;
-  -o-animation-name: bounce_fountainG;
-  -ms-animation-name: bounce_fountainG;
-  -webkit-animation-name: bounce_fountainG;
-  -moz-animation-name: bounce_fountainG;
-  animation-duration: 1.5s;
-  -o-animation-duration: 1.5s;
-  -ms-animation-duration: 1.5s;
-  -webkit-animation-duration: 1.5s;
-  -moz-animation-duration: 1.5s;
-  animation-iteration-count: infinite;
-  -o-animation-iteration-count: infinite;
-  -ms-animation-iteration-count: infinite;
-  -webkit-animation-iteration-count: infinite;
-  -moz-animation-iteration-count: infinite;
-  animation-direction: normal;
-  -o-animation-direction: normal;
-  -ms-animation-direction: normal;
-  -webkit-animation-direction: normal;
-  -moz-animation-direction: normal;
-  transform: scale(0.3);
-  -o-transform: scale(0.3);
-  -ms-transform: scale(0.3);
-  -webkit-transform: scale(0.3);
-  -moz-transform: scale(0.3);
-  border-radius: 19px;
-  -o-border-radius: 19px;
-  -ms-border-radius: 19px;
-  -webkit-border-radius: 19px;
-  -moz-border-radius: 19px; }
-.pokemons #fountainG_1 {
   left: 0;
-  animation-delay: 0.6s;
-  -o-animation-delay: 0.6s;
-  -ms-animation-delay: 0.6s;
-  -webkit-animation-delay: 0.6s;
-  -moz-animation-delay: 0.6s; }
-.pokemons #fountainG_2 {
-  left: 29px;
-  animation-delay: 0.75s;
-  -o-animation-delay: 0.75s;
-  -ms-animation-delay: 0.75s;
-  -webkit-animation-delay: 0.75s;
-  -moz-animation-delay: 0.75s; }
-.pokemons #fountainG_3 {
-  left: 58px;
-  animation-delay: 0.9s;
-  -o-animation-delay: 0.9s;
-  -ms-animation-delay: 0.9s;
-  -webkit-animation-delay: 0.9s;
-  -moz-animation-delay: 0.9s; }
-.pokemons #fountainG_4 {
-  left: 88px;
-  animation-delay: 1.05s;
-  -o-animation-delay: 1.05s;
-  -ms-animation-delay: 1.05s;
-  -webkit-animation-delay: 1.05s;
-  -moz-animation-delay: 1.05s; }
-.pokemons #fountainG_5 {
-  left: 117px;
-  animation-delay: 1.2s;
-  -o-animation-delay: 1.2s;
-  -ms-animation-delay: 1.2s;
-  -webkit-animation-delay: 1.2s;
-  -moz-animation-delay: 1.2s; }
-.pokemons #fountainG_6 {
-  left: 146px;
-  animation-delay: 1.35s;
-  -o-animation-delay: 1.35s;
-  -ms-animation-delay: 1.35s;
-  -webkit-animation-delay: 1.35s;
-  -moz-animation-delay: 1.35s; }
-.pokemons #fountainG_7 {
-  left: 175px;
-  animation-delay: 1.5s;
-  -o-animation-delay: 1.5s;
-  -ms-animation-delay: 1.5s;
-  -webkit-animation-delay: 1.5s;
-  -moz-animation-delay: 1.5s; }
-.pokemons #fountainG_8 {
-  left: 205px;
-  animation-delay: 1.64s;
-  -o-animation-delay: 1.64s;
-  -ms-animation-delay: 1.64s;
-  -webkit-animation-delay: 1.64s;
-  -moz-animation-delay: 1.64s; }
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 1; }
+  .pokemons .preloader #fountainG {
+    position: relative;
+    width: 234px;
+    height: 28px;
+    margin: 30% auto; }
+  .pokemons .preloader .fountainG {
+    position: absolute;
+    top: 0;
+    background-color: black;
+    width: 28px;
+    height: 28px;
+    animation-name: bounce_fountainG;
+    -o-animation-name: bounce_fountainG;
+    -ms-animation-name: bounce_fountainG;
+    -webkit-animation-name: bounce_fountainG;
+    -moz-animation-name: bounce_fountainG;
+    animation-duration: 1.5s;
+    -o-animation-duration: 1.5s;
+    -ms-animation-duration: 1.5s;
+    -webkit-animation-duration: 1.5s;
+    -moz-animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    -o-animation-iteration-count: infinite;
+    -ms-animation-iteration-count: infinite;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    animation-direction: normal;
+    -o-animation-direction: normal;
+    -ms-animation-direction: normal;
+    -webkit-animation-direction: normal;
+    -moz-animation-direction: normal;
+    transform: scale(0.3);
+    -o-transform: scale(0.3);
+    -ms-transform: scale(0.3);
+    -webkit-transform: scale(0.3);
+    -moz-transform: scale(0.3);
+    border-radius: 19px;
+    -o-border-radius: 19px;
+    -ms-border-radius: 19px;
+    -webkit-border-radius: 19px;
+    -moz-border-radius: 19px; }
+  .pokemons .preloader #fountainG_1 {
+    left: 0;
+    animation-delay: 0.6s;
+    -o-animation-delay: 0.6s;
+    -ms-animation-delay: 0.6s;
+    -webkit-animation-delay: 0.6s;
+    -moz-animation-delay: 0.6s; }
+  .pokemons .preloader #fountainG_2 {
+    left: 29px;
+    animation-delay: 0.75s;
+    -o-animation-delay: 0.75s;
+    -ms-animation-delay: 0.75s;
+    -webkit-animation-delay: 0.75s;
+    -moz-animation-delay: 0.75s; }
+  .pokemons .preloader #fountainG_3 {
+    left: 58px;
+    animation-delay: 0.9s;
+    -o-animation-delay: 0.9s;
+    -ms-animation-delay: 0.9s;
+    -webkit-animation-delay: 0.9s;
+    -moz-animation-delay: 0.9s; }
+  .pokemons .preloader #fountainG_4 {
+    left: 88px;
+    animation-delay: 1.05s;
+    -o-animation-delay: 1.05s;
+    -ms-animation-delay: 1.05s;
+    -webkit-animation-delay: 1.05s;
+    -moz-animation-delay: 1.05s; }
+  .pokemons .preloader #fountainG_5 {
+    left: 117px;
+    animation-delay: 1.2s;
+    -o-animation-delay: 1.2s;
+    -ms-animation-delay: 1.2s;
+    -webkit-animation-delay: 1.2s;
+    -moz-animation-delay: 1.2s; }
+  .pokemons .preloader #fountainG_6 {
+    left: 146px;
+    animation-delay: 1.35s;
+    -o-animation-delay: 1.35s;
+    -ms-animation-delay: 1.35s;
+    -webkit-animation-delay: 1.35s;
+    -moz-animation-delay: 1.35s; }
+  .pokemons .preloader #fountainG_7 {
+    left: 175px;
+    animation-delay: 1.5s;
+    -o-animation-delay: 1.5s;
+    -ms-animation-delay: 1.5s;
+    -webkit-animation-delay: 1.5s;
+    -moz-animation-delay: 1.5s; }
+  .pokemons .preloader #fountainG_8 {
+    left: 205px;
+    animation-delay: 1.64s;
+    -o-animation-delay: 1.64s;
+    -ms-animation-delay: 1.64s;
+    -webkit-animation-delay: 1.64s;
+    -moz-animation-delay: 1.64s; }
 @keyframes bounce_fountainG {
   0% {
     transform: scale(1);
@@ -276,28 +284,52 @@
 .above_content {
   display: flex;
   justify-content: space-between; }
+  .above_content button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer; }
+  .above_content button:disabled,
+  .above_content button[disabled] {
+    position: relative;
+    cursor: default; }
+    .above_content button:disabled:before,
+    .above_content button[disabled]:before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.7); }
+  .above_content .poks_quantity {
+    margin: auto 0;
+    font-size: 24px;
+    font-weight: 600; }
 
 .pokemons_arch_grid, .custom_poks {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
   margin: 20px 0; }
-  @media (max-width: 680px) {
+  @media (max-width: 700px) {
     .pokemons_arch_grid, .custom_poks {
       flex-direction: column; } }
   .pokemons_arch_grid .pokemons_arch_grid_items, .custom_poks .pokemons_arch_grid_items {
     display: flex;
     max-width: 25%;
     flex-direction: column;
-    max-height: 600px;
+    max-height: 60vh;
     overflow-y: scroll;
     overflow-x: hidden;
     padding-right: 10px; }
-    @media (max-width: 680px) {
+    @media (max-width: 1000px) {
       .pokemons_arch_grid .pokemons_arch_grid_items, .custom_poks .pokemons_arch_grid_items {
+        max-width: 30%; } }
+    @media (max-width: 700px) {
+      .pokemons_arch_grid .pokemons_arch_grid_items, .custom_poks .pokemons_arch_grid_items {
+        position: initial;
         flex-direction: row;
         max-width: 100%;
-        max-height: initial;
+        height: 275px;
         overflow-x: scroll;
         overflow-y: hidden;
         padding: 0; } }
@@ -305,6 +337,15 @@
       max-width: initial;
       flex: initial;
       margin: 10px 0; }
+      @media (max-width: 700px) {
+        .pokemons_arch_grid .pokemons_arch_grid_items .grid_item, .pokemons_arch_grid .pokemons_arch_grid_items .show_more, .custom_poks .pokemons_arch_grid_items .grid_item, .custom_poks .pokemons_arch_grid_items .show_more {
+          position: relative;
+          min-width: 175px;
+          margin: 5px 5px; } }
+      @media (max-width: 700px) {
+        .pokemons_arch_grid .pokemons_arch_grid_items .grid_item .pokemon_description, .pokemons_arch_grid .pokemons_arch_grid_items .show_more .pokemon_description, .custom_poks .pokemons_arch_grid_items .grid_item .pokemon_description, .custom_poks .pokemons_arch_grid_items .show_more .pokemon_description {
+          position: absolute;
+          bottom: 2%; } }
       @media (max-width: 1000px) {
         .pokemons_arch_grid .pokemons_arch_grid_items .grid_item .pokemon_description .pokemon_name, .pokemons_arch_grid .pokemons_arch_grid_items .show_more .pokemon_description .pokemon_name, .custom_poks .pokemons_arch_grid_items .grid_item .pokemon_description .pokemon_name, .custom_poks .pokemons_arch_grid_items .show_more .pokemon_description .pokemon_name {
           text-align: center;
@@ -320,11 +361,34 @@
         @media (max-width: 1000px) {
           .pokemons_arch_grid .pokemons_arch_grid_items .grid_item .pokemon_description .pokemon_stats, .pokemons_arch_grid .pokemons_arch_grid_items .show_more .pokemon_description .pokemon_stats, .custom_poks .pokemons_arch_grid_items .grid_item .pokemon_description .pokemon_stats, .custom_poks .pokemons_arch_grid_items .show_more .pokemon_description .pokemon_stats {
             display: none; } }
+    .pokemons_arch_grid .pokemons_arch_grid_items .show_more, .custom_poks .pokemons_arch_grid_items .show_more {
+      position: absolute;
+      bottom: -10px;
+      width: 23%;
+      font-size: 26px; }
+      @media (max-width: 1000px) {
+        .pokemons_arch_grid .pokemons_arch_grid_items .show_more, .custom_poks .pokemons_arch_grid_items .show_more {
+          width: 28%;
+          font-size: 24px; } }
+      @media (max-width: 700px) {
+        .pokemons_arch_grid .pokemons_arch_grid_items .show_more, .custom_poks .pokemons_arch_grid_items .show_more {
+          bottom: -60px;
+          margin: 0;
+          width: 100%; } }
   .pokemons_arch_grid .pokemons_arch_grid_map, .custom_poks .pokemons_arch_grid_map {
     max-width: 75%;
     width: 75%; }
+    @media (max-width: 1000px) {
+      .pokemons_arch_grid .pokemons_arch_grid_map, .custom_poks .pokemons_arch_grid_map {
+        max-width: 70%;
+        width: 70%; } }
+    @media (max-width: 700px) {
+      .pokemons_arch_grid .pokemons_arch_grid_map, .custom_poks .pokemons_arch_grid_map {
+        max-width: 100%;
+        width: 100%;
+        margin-top: 15px; } }
     .pokemons_arch_grid .pokemons_arch_grid_map #map_arch, .custom_poks .pokemons_arch_grid_map #map_arch {
-      height: 600px; }
+      height: 60vh; }
   .pokemons_arch_grid .grid_item, .custom_poks .grid_item {
     flex: 30%;
     max-width: 30%;
@@ -335,7 +399,7 @@
       .pokemons_arch_grid .grid_item, .custom_poks .grid_item {
         flex: 45%;
         max-width: 45%; } }
-    @media (max-width: 680px) {
+    @media (max-width: 700px) {
       .pokemons_arch_grid .grid_item, .custom_poks .grid_item {
         flex: 100%;
         max-width: 100%; } }
@@ -344,7 +408,7 @@
     .pokemons_arch_grid .grid_item .slick-prev, .pokemons_arch_grid .grid_item .slick-next, .custom_poks .grid_item .slick-prev, .custom_poks .grid_item .slick-next {
       display: none !important;
       z-index: 1;
-      top: 40%; }
+      top: 50%; }
     .pokemons_arch_grid .grid_item .slick-prev:before, .pokemons_arch_grid .grid_item .slick-next:before, .custom_poks .grid_item .slick-prev:before, .custom_poks .grid_item .slick-next:before {
       color: #e6ba5f;
       font-size: 40px; }
@@ -372,8 +436,9 @@
             text-align: left; }
             .pokemons_arch_grid .grid_item .pokemon_cont .pokemon_cont_inner .attacks .attacks_types span, .pokemons_arch_grid .grid_item .pokemon_cont .pokemon_cont_inner .attacks .attacks_weak span, .custom_poks .grid_item .pokemon_cont .pokemon_cont_inner .attacks .attacks_types span, .custom_poks .grid_item .pokemon_cont .pokemon_cont_inner .attacks .attacks_weak span {
               font-weight: bold; }
-      .pokemons_arch_grid .grid_item .pokemon_cont .pokemon_image img, .custom_poks .grid_item .pokemon_cont .pokemon_image img {
-        margin: 0 auto; }
+      .pokemons_arch_grid .grid_item .pokemon_cont .pokemon_image, .custom_poks .grid_item .pokemon_cont .pokemon_image {
+        display: flex;
+        align-items: center; }
   .pokemons_arch_grid .show_more, .pokemons_arch_grid .arch_link, .custom_poks .show_more, .custom_poks .arch_link {
     display: flex;
     flex: 30%;
@@ -445,6 +510,39 @@
         font-size: 12px; } }
     .pokemon_description .pokemon_stats li {
       margin-left: 2%; }
+
+.poks_filter {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; }
+  .poks_filter fieldset {
+    align-self: center;
+    height: 100%; }
+    .poks_filter fieldset .ui-button {
+      border: none;
+      background: none; }
+  .poks_filter .jqui_slider {
+    max-width: 25%;
+    margin-left: 2%; }
+    .poks_filter .jqui_slider .jqui_slider_label {
+      display: inline-block;
+      width: 40%;
+      margin-left: 10%; }
+    .poks_filter .jqui_slider .jqui_slider_values {
+      width: 40%;
+      text-align: right;
+      border: none; }
+    .poks_filter .jqui_slider .ui-widget-content {
+      border: none;
+      background: #efeff1;
+      height: 2px; }
+      .poks_filter .jqui_slider .ui-widget-content .ui-slider-handle {
+        border-radius: 50%;
+        background: #e6ba5f;
+        border: none;
+        top: -.5em; }
+      .poks_filter .jqui_slider .ui-widget-content .ui-widget-header {
+        background: #e6ba5f; }
 
 .gm-style-iw-d .pokemon_image img {
   max-width: 100%;

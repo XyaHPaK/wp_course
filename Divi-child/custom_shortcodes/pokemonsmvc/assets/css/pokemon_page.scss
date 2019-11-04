@@ -1,183 +1,193 @@
 .pokemons {
-  #fountainG {
-    position:relative;
-    width:234px;
-    height:28px;
-    margin:auto;
+  .preloader {
     display: none;
-  }
-
-  .fountainG {
-    position:absolute;
-    top:0;
-    background-color:rgb(0,0,0);
-    width:28px;
-    height:28px;
-    animation-name:bounce_fountainG;
-    -o-animation-name:bounce_fountainG;
-    -ms-animation-name:bounce_fountainG;
-    -webkit-animation-name:bounce_fountainG;
-    -moz-animation-name:bounce_fountainG;
-    animation-duration:1.5s;
-    -o-animation-duration:1.5s;
-    -ms-animation-duration:1.5s;
-    -webkit-animation-duration:1.5s;
-    -moz-animation-duration:1.5s;
-    animation-iteration-count:infinite;
-    -o-animation-iteration-count:infinite;
-    -ms-animation-iteration-count:infinite;
-    -webkit-animation-iteration-count:infinite;
-    -moz-animation-iteration-count:infinite;
-    animation-direction:normal;
-    -o-animation-direction:normal;
-    -ms-animation-direction:normal;
-    -webkit-animation-direction:normal;
-    -moz-animation-direction:normal;
-    transform:scale(.3);
-    -o-transform:scale(.3);
-    -ms-transform:scale(.3);
-    -webkit-transform:scale(.3);
-    -moz-transform:scale(.3);
-    border-radius:19px;
-    -o-border-radius:19px;
-    -ms-border-radius:19px;
-    -webkit-border-radius:19px;
-    -moz-border-radius:19px;
-  }
-
-  #fountainG_1 {
-    left:0;
-    animation-delay:0.6s;
-    -o-animation-delay:0.6s;
-    -ms-animation-delay:0.6s;
-    -webkit-animation-delay:0.6s;
-    -moz-animation-delay:0.6s;
-  }
-
-  #fountainG_2 {
-    left:29px;
-    animation-delay:0.75s;
-    -o-animation-delay:0.75s;
-    -ms-animation-delay:0.75s;
-    -webkit-animation-delay:0.75s;
-    -moz-animation-delay:0.75s;
-  }
-
-  #fountainG_3 {
-    left:58px;
-    animation-delay:0.9s;
-    -o-animation-delay:0.9s;
-    -ms-animation-delay:0.9s;
-    -webkit-animation-delay:0.9s;
-    -moz-animation-delay:0.9s;
-  }
-
-  #fountainG_4 {
-    left:88px;
-    animation-delay:1.05s;
-    -o-animation-delay:1.05s;
-    -ms-animation-delay:1.05s;
-    -webkit-animation-delay:1.05s;
-    -moz-animation-delay:1.05s;
-  }
-
-  #fountainG_5 {
-    left:117px;
-    animation-delay:1.2s;
-    -o-animation-delay:1.2s;
-    -ms-animation-delay:1.2s;
-    -webkit-animation-delay:1.2s;
-    -moz-animation-delay:1.2s;
-  }
-
-  #fountainG_6 {
-    left:146px;
-    animation-delay:1.35s;
-    -o-animation-delay:1.35s;
-    -ms-animation-delay:1.35s;
-    -webkit-animation-delay:1.35s;
-    -moz-animation-delay:1.35s;
-  }
-
-  #fountainG_7 {
-    left:175px;
-    animation-delay:1.5s;
-    -o-animation-delay:1.5s;
-    -ms-animation-delay:1.5s;
-    -webkit-animation-delay:1.5s;
-    -moz-animation-delay:1.5s;
-  }
-
-  #fountainG_8 {
-    left:205px;
-    animation-delay:1.64s;
-    -o-animation-delay:1.64s;
-    -ms-animation-delay:1.64s;
-    -webkit-animation-delay:1.64s;
-    -moz-animation-delay:1.64s;
-  }
-
-
-
-  @keyframes bounce_fountainG {
-    0% {
-      transform:scale(1);
-      background-color:rgb(0,0,0);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(255,255,255,0.5);
+    z-index: 1;
+    #fountainG {
+      position:relative;
+      width:234px;
+      height:28px;
+      margin: 30% auto;
     }
 
-    100% {
+    .fountainG {
+      position:absolute;
+      top:0;
+      background-color:rgb(0,0,0);
+      width:28px;
+      height:28px;
+      animation-name:bounce_fountainG;
+      -o-animation-name:bounce_fountainG;
+      -ms-animation-name:bounce_fountainG;
+      -webkit-animation-name:bounce_fountainG;
+      -moz-animation-name:bounce_fountainG;
+      animation-duration:1.5s;
+      -o-animation-duration:1.5s;
+      -ms-animation-duration:1.5s;
+      -webkit-animation-duration:1.5s;
+      -moz-animation-duration:1.5s;
+      animation-iteration-count:infinite;
+      -o-animation-iteration-count:infinite;
+      -ms-animation-iteration-count:infinite;
+      -webkit-animation-iteration-count:infinite;
+      -moz-animation-iteration-count:infinite;
+      animation-direction:normal;
+      -o-animation-direction:normal;
+      -ms-animation-direction:normal;
+      -webkit-animation-direction:normal;
+      -moz-animation-direction:normal;
       transform:scale(.3);
-      background-color:rgb(255,255,255);
-    }
-  }
-
-  @-o-keyframes bounce_fountainG {
-    0% {
-      -o-transform:scale(1);
-      background-color:rgb(0,0,0);
-    }
-
-    100% {
       -o-transform:scale(.3);
-      background-color:rgb(255,255,255);
-    }
-  }
-
-  @-ms-keyframes bounce_fountainG {
-    0% {
-      -ms-transform:scale(1);
-      background-color:rgb(0,0,0);
-    }
-
-    100% {
       -ms-transform:scale(.3);
-      background-color:rgb(255,255,255);
-    }
-  }
-
-  @-webkit-keyframes bounce_fountainG {
-    0% {
-      -webkit-transform:scale(1);
-      background-color:rgb(0,0,0);
-    }
-
-    100% {
       -webkit-transform:scale(.3);
-      background-color:rgb(255,255,255);
-    }
-  }
-
-  @-moz-keyframes bounce_fountainG {
-    0% {
-      -moz-transform:scale(1);
-      background-color:rgb(0,0,0);
-    }
-
-    100% {
       -moz-transform:scale(.3);
-      background-color:rgb(255,255,255);
+      border-radius:19px;
+      -o-border-radius:19px;
+      -ms-border-radius:19px;
+      -webkit-border-radius:19px;
+      -moz-border-radius:19px;
+    }
+
+    #fountainG_1 {
+      left:0;
+      animation-delay:0.6s;
+      -o-animation-delay:0.6s;
+      -ms-animation-delay:0.6s;
+      -webkit-animation-delay:0.6s;
+      -moz-animation-delay:0.6s;
+    }
+
+    #fountainG_2 {
+      left:29px;
+      animation-delay:0.75s;
+      -o-animation-delay:0.75s;
+      -ms-animation-delay:0.75s;
+      -webkit-animation-delay:0.75s;
+      -moz-animation-delay:0.75s;
+    }
+
+    #fountainG_3 {
+      left:58px;
+      animation-delay:0.9s;
+      -o-animation-delay:0.9s;
+      -ms-animation-delay:0.9s;
+      -webkit-animation-delay:0.9s;
+      -moz-animation-delay:0.9s;
+    }
+
+    #fountainG_4 {
+      left:88px;
+      animation-delay:1.05s;
+      -o-animation-delay:1.05s;
+      -ms-animation-delay:1.05s;
+      -webkit-animation-delay:1.05s;
+      -moz-animation-delay:1.05s;
+    }
+
+    #fountainG_5 {
+      left:117px;
+      animation-delay:1.2s;
+      -o-animation-delay:1.2s;
+      -ms-animation-delay:1.2s;
+      -webkit-animation-delay:1.2s;
+      -moz-animation-delay:1.2s;
+    }
+
+    #fountainG_6 {
+      left:146px;
+      animation-delay:1.35s;
+      -o-animation-delay:1.35s;
+      -ms-animation-delay:1.35s;
+      -webkit-animation-delay:1.35s;
+      -moz-animation-delay:1.35s;
+    }
+
+    #fountainG_7 {
+      left:175px;
+      animation-delay:1.5s;
+      -o-animation-delay:1.5s;
+      -ms-animation-delay:1.5s;
+      -webkit-animation-delay:1.5s;
+      -moz-animation-delay:1.5s;
+    }
+
+    #fountainG_8 {
+      left:205px;
+      animation-delay:1.64s;
+      -o-animation-delay:1.64s;
+      -ms-animation-delay:1.64s;
+      -webkit-animation-delay:1.64s;
+      -moz-animation-delay:1.64s;
+    }
+
+
+
+    @keyframes bounce_fountainG {
+      0% {
+        transform:scale(1);
+        background-color:rgb(0,0,0);
+      }
+
+      100% {
+        transform:scale(.3);
+        background-color:rgb(255,255,255);
+      }
+    }
+
+    @-o-keyframes bounce_fountainG {
+      0% {
+        -o-transform:scale(1);
+        background-color:rgb(0,0,0);
+      }
+
+      100% {
+        -o-transform:scale(.3);
+        background-color:rgb(255,255,255);
+      }
+    }
+
+    @-ms-keyframes bounce_fountainG {
+      0% {
+        -ms-transform:scale(1);
+        background-color:rgb(0,0,0);
+      }
+
+      100% {
+        -ms-transform:scale(.3);
+        background-color:rgb(255,255,255);
+      }
+    }
+
+    @-webkit-keyframes bounce_fountainG {
+      0% {
+        -webkit-transform:scale(1);
+        background-color:rgb(0,0,0);
+      }
+
+      100% {
+        -webkit-transform:scale(.3);
+        background-color:rgb(255,255,255);
+      }
+    }
+
+    @-moz-keyframes bounce_fountainG {
+      0% {
+        -moz-transform:scale(1);
+        background-color:rgb(0,0,0);
+      }
+
+      100% {
+        -moz-transform:scale(.3);
+        background-color:rgb(255,255,255);
+      }
     }
   }
+
   .pok_detailed {
     h1 {
       text-align: center;
@@ -374,27 +384,54 @@
 .above_content {
   display: flex;
   justify-content: space-between;
+  button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  button:disabled,
+  button[disabled] {
+    position: relative;
+    cursor: default;
+    &:before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+  }
+  .poks_quantity {
+    margin: auto 0;
+    font-size: 24px;
+    font-weight: 600;
+  }
 }
 .pokemons_arch_grid, .custom_poks {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
   margin: 20px 0;
-  @media (max-width: 680px) {
+  @media (max-width: 700px) {
     flex-direction: column;
   }
   .pokemons_arch_grid_items {
     display: flex;
     max-width: 25%;
     flex-direction: column;
-    max-height: 600px;
+    max-height: 60vh;
     overflow-y: scroll;
     overflow-x: hidden;
     padding-right: 10px;
-    @media (max-width: 680px) {
+    @media (max-width: 1000px) {
+      max-width: 30%;
+    }
+    @media (max-width: 700px) {
+      position: initial;
       flex-direction: row;
       max-width: 100%;
-      max-height: initial;
+      height: 275px;
       overflow-x: scroll;
       overflow-y: hidden;
       padding: 0;
@@ -403,7 +440,16 @@
       max-width: initial;
       flex: initial;
       margin: 10px 0;
+      @media (max-width: 700px) {
+        position: relative;
+        min-width: 175px;
+        margin: 5px 5px;
+      }
       .pokemon_description {
+        @media (max-width: 700px) {
+          position: absolute;
+          bottom: 2%;
+        }
         .pokemon_name {
           @media (max-width:1000px) {
             text-align: center;
@@ -424,13 +470,39 @@
         }
       }
     }
-
+    .show_more {
+      position: absolute;
+      bottom: -10px;
+      width: 23%;
+      font-size: 26px;
+      @media (max-width: 1000px) {
+        width: 28%;
+        font-size: 24px;
+      }
+      @media (max-width: 700px) {
+        bottom: -60px;
+        margin: 0;
+        width: 100%;
+      }
+    }
   }
   .pokemons_arch_grid_map {
     max-width: 75%;
     width: 75%;
+    @media (max-width: 1000px) {
+      max-width: 70%;
+      width: 70%;
+    }
+    @media (max-width: 700px) {
+      max-width: 100%;
+      width: 100%;
+      margin-top: 15px;
+    }
     #map_arch {
-      height: 600px;
+      height: 60vh;
+      //@media (max-width: 700px) {
+      // height: 300px;
+      //}
     }
   }
   .grid_item {
@@ -443,7 +515,7 @@
       flex: 45%;
       max-width: 45%;
     }
-    @media (max-width: 680px) {
+    @media (max-width: 700px) {
       flex: 100%;
       max-width: 100%;
     }
@@ -455,7 +527,7 @@
     .slick-prev, .slick-next {
       display: none !important;
       z-index: 1;
-      top: 40%;
+      top: 50%;
     }
     .slick-prev:before, .slick-next:before {
       color: #e6ba5f;
@@ -495,9 +567,8 @@
         }
       }
       .pokemon_image {
-        img {
-          margin: 0 auto;
-        }
+        display: flex;
+        align-items: center;
       }
     }
   }
@@ -580,6 +651,47 @@
     }
     li {
       margin-left: 2%;
+    }
+  }
+}
+.poks_filter {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  fieldset {
+    align-self: center;
+    height: 100%;
+    .ui-button {
+      border: none;
+      background: none;
+    }
+  }
+  .jqui_slider {
+    max-width: 25%;
+    margin-left: 2%;
+    .jqui_slider_label {
+      display: inline-block;
+      width: 40%;
+      margin-left: 10%;
+    }
+    .jqui_slider_values {
+      width: 40%;
+      text-align: right;
+      border: none;
+    }
+    .ui-widget-content {
+      border: none;
+      background: #efeff1;
+      height: 2px;
+      .ui-slider-handle {
+        border-radius: 50%;
+        background: #e6ba5f;
+        border: none;
+        top: -.5em;
+      }
+      .ui-widget-header {
+        background: #e6ba5f;
+      }
     }
   }
 }

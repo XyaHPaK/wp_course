@@ -259,27 +259,36 @@ class view_pokemon {
     static function poks_archive_output( $filtered_poks ) {
         $arch_query_link = model_pokemon::get_archive_page_link();
         $path = parse_url($arch_query_link, PHP_URL_PATH); ?>
-            <div class="pokemons">
+        <div class="pokemons">
+            <div class="preloader">
                 <?php self::preloader(); ?>
-                <?php if ($path == $_SERVER['REQUEST_URI']) { ?>
-                <div class="above_content">
-                    <div class="poks_quantity">
-                        <span><?php echo count($filtered_poks) . __(' Pokemons Shown'); ?></span>
-                    </div>
-                    <div class="view_buttons">
-                        <button class="grid_btn" disabled><?php echo __('grid'); ?></button>
-                        <button class="map_btn"><?php echo __('map'); ?></button>
-                    </div>
+            </div>
+            <?php if ($path == $_SERVER['REQUEST_URI']) { ?>
+            <div class="above_content">
+                <div class="poks_quantity">
+                    <span class="counter"><?php echo count($filtered_poks) . '</span>' . '<span>' . __(' Pokemons Shown') . '</span>'; ?>
                 </div>
-
-                <div class="pokemons_arch_grid">
-                <?php
-                   self::archive_page_items_markup($filtered_poks, $arch_query_link);
-                } ?>
+                <div class="view_buttons">
+                    <button class="grid_btn" disabled>
+                        <img src="http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/nine-black-tiles_icon-icons.com_73478.png">
+                    </button>
+                    <button class="map_btn">
+                        <img src="http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/map.png">
+                    </button>
                 </div>
             </div>
+
+            <div class="pokemons_arch_grid">
             <?php
+               self::archive_page_items_markup($filtered_poks, $arch_query_link);
+            } ?>
+            </div>
+        </div>
+        <?php
     }
+    /*
+     *
+     * */
     static function poks_archive_map_output($filtered_poks) {
         $arch_query_link = model_pokemon::get_archive_page_link();
         echo '<div class="pokemons_arch_grid_items">';
@@ -321,7 +330,6 @@ class view_pokemon {
         }
         die();
     }
-
     /*
      * single page output
      * */
@@ -370,5 +378,39 @@ class view_pokemon {
         model_pokemon::single_map_init();
         ?><a class ="print-doc" href="javascript:(print());"><?php echo __('Get/Print PDF'); ?></a><?php
         die();
+    }
+    /*
+     * filtering forms markup
+     * */
+    static function filter_markup() {
+        ?>
+        <div class="poks_filter">
+            <fieldset>
+                <label for="types"><?php echo __('Type:'); ?></label>
+                <select name="types" id="types">
+                    <option>1</option>
+                    <option>2</option>
+                    <option selected="selected">3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </fieldset>
+            <div class="jqui_slider">
+                <label class="jqui_slider_label" for="hp_range"><?php echo __('HP:'); ?></label>
+                <input class="jqui_slider_values" id="hp_range" type="text" readonly>
+                <div id="hp_slider"></div>
+                <input id="hp_val_min" type="hidden" value="0">
+                <input id="hp_val_max" type="hidden" value="1000">
+            </div>
+            <div class="jqui_slider">
+                <label class="jqui_slider_label" for="cp_range"><?php echo __('CP:'); ?></label>
+                <input class="jqui_slider_values" id="cp_range" type="text" readonly>
+                <div id="cp_slider"></div>
+                <input id="cp_val_min" type="hidden" value="0">
+                <input id="cp_val_max" type="hidden" value="1000">
+            </div>
+            <input type="submit" class="filter_btn" value="<?php echo __('Show'); ?>">
+        </div>
+        <?php
     }
 }
