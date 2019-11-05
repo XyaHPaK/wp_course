@@ -299,9 +299,9 @@
         });
         $( "#types" ).selectmenu();
         $("#hp_slider").slider({
-            min: 0,
-            max: 1000,
-            values: [0,1000],
+            min: Number(ajaxarr.min_hp),
+            max: Number(ajaxarr.max_hp),
+            values: [Number(ajaxarr.min_hp), Number(ajaxarr.max_hp)],
             range: true,
             create: function (event, ui) {
                 $("#hp_range").val($("#hp_val_min").val() + '-' + $("#hp_val_max").val());
@@ -318,9 +318,9 @@
             }
         });
         $("#cp_slider").slider({
-            min: 0,
-            max: 1000,
-            values: [0,1000],
+            min: Number(ajaxarr.min_cp),
+            max: Number(ajaxarr.max_cp),
+            values: [Number(ajaxarr.min_cp), Number(ajaxarr.max_cp)],
             range: true,
             create: function (event, ui) {
                 $("#cp_range").val($("#cp_val_min").val() + '-' + $("#cp_val_max").val());
@@ -335,6 +335,67 @@
                 $("#cp_val_max").val(ui.values[1]);
                 $("#cp_range").val(ui.values[0] + '-' + ui.values[1]);
             }
+        });
+        $('.filter_btn').on('click', function () {
+            min_hp = $('#hp_val_min').val();
+            max_hp = $('#hp_val_max').val();
+            min_cp = $('#cp_val_min').val();
+            max_cp = $('#cp_val_max').val();
+            type = $('.poks_filter .ui-selectmenu-text').text();
+            let data_arr = {
+                'action': 'show_filtered',
+                'max_hp': max_hp,
+                'min_hp': min_hp,
+                'max_cp': max_cp,
+                'min_cp': min_cp,
+                'type': type
+
+            };
+            $.ajax({
+                url: ajaxarr.ajaxurl,
+                data: data_arr,
+                type: 'POST',
+                beforeSend: function () {
+                    $('.preloader').css('display', 'block');
+                },
+                success: function (data) {
+                    $('.preloader').css('display', 'none');
+
+                    $('.pokemons').hide().html(data).show();
+                },
+                complete: function () {
+                    slick_init();
+                    if (window.innerWidth >= 700) {
+                        fixHeights();
+                    }
+                    $('.map_btn').on('click', function () {
+                        let count = $('.counter').text();
+                        let data_arr = {
+                            'action': 'to_map',
+                        };
+                        $.ajax({
+                            url: ajaxarr.ajaxurl,
+                            data: data_arr,
+                            type: 'POST',
+                            beforeSend: function () {
+                                $('.preloader').css('display', 'block');
+                            },
+                            success: function (data) {
+                                $('.preloader').css('display', 'none');
+
+                                $('.pokemons_arch_grid').hide().html(data).show();
+                            },
+                            complete: function () {
+                                slick_init();
+                                if (window.innerWidth <= 700) {
+                                    fixHeights();
+                                }
+                                $('.counter').text(count);
+                            }
+                        })
+                    });
+                }
+            })
         });
         /*
          * Executes fixHeights func when window loads

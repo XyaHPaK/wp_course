@@ -223,7 +223,7 @@ class view_pokemon {
     /*
      *
      * */
-    static function archive_page_items_markup($filtered_poks, $arch_query_link) {
+    static function archive_page_items_markup($filtered_poks, $arch_query_link, $filtered = null) {
         foreach ($filtered_poks as $pok) {
             $evolutions = $pok->evolutions;
             $link = $arch_query_link . '?id=' . ($pok->name);
@@ -247,9 +247,28 @@ class view_pokemon {
             echo '</div>';
             echo '</div>';
         }
+        if (!$filtered) {
+            ?>
+            <div id="show_more" class="pokemon_cont show_more">
+                <a><?php echo __('Show More'); ?></a>
+            </div>
+            <?php
+        }
+    }
+    static function above_content($filtered_poks) {
         ?>
-        <div id="show_more" class="pokemon_cont show_more">
-            <a><?php echo __('Show More'); ?></a>
+        <div class="above_content">
+            <div class="poks_quantity">
+                    <span class="counter"><?php echo count($filtered_poks) . '</span>' . '<span>' . __(' Pokemons Shown') . '</span>'; ?>
+            </div>
+            <div class="view_buttons">
+                <button class="grid_btn" disabled>
+                    <img src="http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/nine-black-tiles_icon-icons.com_73478.png">
+                </button>
+                <button class="map_btn">
+                    <img src="http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/map.png">
+                </button>
+            </div>
         </div>
         <?php
     }
@@ -263,26 +282,14 @@ class view_pokemon {
             <div class="preloader">
                 <?php self::preloader(); ?>
             </div>
-            <?php if ($path == $_SERVER['REQUEST_URI']) { ?>
-            <div class="above_content">
-                <div class="poks_quantity">
-                    <span class="counter"><?php echo count($filtered_poks) . '</span>' . '<span>' . __(' Pokemons Shown') . '</span>'; ?>
-                </div>
-                <div class="view_buttons">
-                    <button class="grid_btn" disabled>
-                        <img src="http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/nine-black-tiles_icon-icons.com_73478.png">
-                    </button>
-                    <button class="map_btn">
-                        <img src="http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/map.png">
-                    </button>
-                </div>
-            </div>
-
-            <div class="pokemons_arch_grid">
-            <?php
+            <?php if ($path == $_SERVER['REQUEST_URI']) {
+                self::above_content($filtered_poks);
+                ?>
+                <div class="pokemons_arch_grid">
+                <?php
                self::archive_page_items_markup($filtered_poks, $arch_query_link);
+               ?></div><?php
             } ?>
-            </div>
         </div>
         <?php
     }
@@ -383,31 +390,38 @@ class view_pokemon {
      * filtering forms markup
      * */
     static function filter_markup() {
+        $types = model_pokemon::get_query_arr('types');
+        $min_hp = min(model_pokemon::get_query_arr('maxHP'));
+        $max_hp = max(model_pokemon::get_query_arr('maxHP'));
+        $min_cp = min(model_pokemon::get_query_arr('maxCP'));
+        $max_cp = max(model_pokemon::get_query_arr('maxCP'));
         ?>
         <div class="poks_filter">
             <fieldset>
                 <label for="types"><?php echo __('Type:'); ?></label>
                 <select name="types" id="types">
-                    <option>1</option>
-                    <option>2</option>
-                    <option selected="selected">3</option>
-                    <option>4</option>
-                    <option>5</option>
+                    <?php foreach ($types as $key => $type) {
+                        if ($key == 0) {
+                        ?>
+                            <option><?php echo __('All'); ?></option>
+                        <?php } ?>
+                        <option><?php echo $type; ?></option>
+                    <?php } ?>
                 </select>
             </fieldset>
             <div class="jqui_slider">
                 <label class="jqui_slider_label" for="hp_range"><?php echo __('HP:'); ?></label>
                 <input class="jqui_slider_values" id="hp_range" type="text" readonly>
                 <div id="hp_slider"></div>
-                <input id="hp_val_min" type="hidden" value="0">
-                <input id="hp_val_max" type="hidden" value="1000">
+                <input id="hp_val_min" type="hidden" value="<?php echo $min_hp; ?>">
+                <input id="hp_val_max" type="hidden" value="<?php echo $max_hp; ?>">
             </div>
             <div class="jqui_slider">
                 <label class="jqui_slider_label" for="cp_range"><?php echo __('CP:'); ?></label>
                 <input class="jqui_slider_values" id="cp_range" type="text" readonly>
                 <div id="cp_slider"></div>
-                <input id="cp_val_min" type="hidden" value="0">
-                <input id="cp_val_max" type="hidden" value="1000">
+                <input id="cp_val_min" type="hidden" value="<?php echo $min_cp; ?>">
+                <input id="cp_val_max" type="hidden" value="<?php echo $max_cp; ?>">
             </div>
             <input type="submit" class="filter_btn" value="<?php echo __('Show'); ?>">
         </div>

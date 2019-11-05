@@ -3,8 +3,8 @@
     display: none;
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
+    left: -50%;
+    width: 200%;
     height: 100vh;
     background-color: rgba(255,255,255,0.5);
     z-index: 1;
@@ -12,7 +12,7 @@
       position:relative;
       width:234px;
       height:28px;
-      margin: 30% auto;
+      margin: 15% auto;
     }
 
     .fountainG {
@@ -384,15 +384,13 @@
 .above_content {
   display: flex;
   justify-content: space-between;
+  margin-top: 30px;
   button {
     background-color: transparent;
     border: none;
     cursor: pointer;
-  }
-  button:disabled,
-  button[disabled] {
+    transition: .5s;
     position: relative;
-    cursor: default;
     &:before {
       content: '';
       position: absolute;
@@ -400,6 +398,18 @@
       height: 100%;
       bottom: 0;
       background-color: rgba(255, 255, 255, 0.7);
+    }
+    &:hover {
+      &:before {
+        content: none;
+      }
+    }
+  }
+  button:disabled,
+  button[disabled] {
+    cursor: default;
+    &:before {
+      content: none;
     }
   }
   .poks_quantity {
@@ -500,9 +510,6 @@
     }
     #map_arch {
       height: 60vh;
-      //@media (max-width: 700px) {
-      // height: 300px;
-      //}
     }
   }
   .grid_item {
@@ -539,6 +546,9 @@
     .slick-next {
       right: 15px;
     }
+    .slick-track {
+      line-height: 0;
+    }
     .pokemon_cont {
       position: relative;
       .pokemon_cont_inner {
@@ -569,6 +579,9 @@
       .pokemon_image {
         display: flex;
         align-items: center;
+        img {
+          margin: auto;
+        }
       }
     }
   }
@@ -655,20 +668,53 @@
   }
 }
 .poks_filter {
+  position: relative;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  fieldset {
-    align-self: center;
+  padding: 30px 0;
+  @media (max-width: 1100px) {
+    flex-direction: column;
+  }
+  &:before {
+    content: '';
+    position: absolute;
+    width: 200%;
     height: 100%;
+    top: 0;
+    left: -50%;
+    box-shadow: 0 9px 15px rgba(0, 0, 0, 0.1);
+  }
+  fieldset {
+    border-bottom: 2px solid #efeff1;
+    @media (min-width: 1400px) {
+      width: 23%;
+    }
+    @media (max-width: 1100px) {
+      padding: 0 10%;
+    }
     .ui-button {
       border: none;
       background: none;
+      @media (max-width: 1100px) {
+        width: 90%;
+        padding-right: 0;
+        margin-right: 0;
+      }
+      @media (max-width: 650px) {
+        width: 79%;
+      }
     }
   }
   .jqui_slider {
-    max-width: 25%;
     margin-left: 2%;
+    @media (min-width: 1400px) {
+      width: 23%;
+    }
+    @media (max-width: 1100px) {
+      margin-left: 0;
+      margin-top: 20px;
+    }
     .jqui_slider_label {
       display: inline-block;
       width: 40%;
@@ -683,6 +729,7 @@
       border: none;
       background: #efeff1;
       height: 2px;
+      margin-top: 15px;
       .ui-slider-handle {
         border-radius: 50%;
         background: #e6ba5f;
@@ -691,6 +738,40 @@
       }
       .ui-widget-header {
         background: #e6ba5f;
+      }
+    }
+  }
+  .filter_btn {
+    border-style: none;
+    cursor: pointer;
+    background-color: #e6ba5f;
+    color: #3d1249;
+    width: 15%;
+    transition: .5s;
+    z-index: 1;
+    @media (max-width: 1100px) {
+      margin-top: 20px;
+      align-self: center;
+      width: 25%;
+      height: 30px;
+    }
+    &:hover {
+      color: #efeff1;
+      background-color: #3d1249;
+    }
+  }
+}
+.ui-selectmenu-menu {
+  height: 200px;
+  overflow-y: scroll;
+  border-top: 3px solid #3d1249;
+  .ui-widget-content {
+    border: none !important;
+    background-color: #efeff1;
+    .ui-menu-item {
+      .ui-state-active {
+        border: none;
+        background-color: #3d1249;
       }
     }
   }

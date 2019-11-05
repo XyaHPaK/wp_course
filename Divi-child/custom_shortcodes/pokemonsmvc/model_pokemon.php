@@ -16,6 +16,8 @@ class model_pokemon {
         add_action('wp_ajax_nopriv_to_map', array(&$this, 'map_view_output'));
         add_action('wp_ajax_to_grid', array(&$this, 'grid_view_output'));
         add_action('wp_ajax_nopriv_to_grid', array(&$this, 'grid_view_output'));
+        add_action('wp_ajax_show_filtered', array(&$this, 'show_filtered'));
+        add_action('wp_ajax_show_filtered', array(&$this, 'show_filtered'));
 
 
     }
@@ -33,6 +35,10 @@ class model_pokemon {
     function localize() {
         $filtered_poks = self::filtered_pokemons();
         $json_data = self::get_data_from_file('coors.json');
+        $min_hp = min(model_pokemon::get_query_arr('maxHP'));
+        $max_hp = max(model_pokemon::get_query_arr('maxHP'));
+        $min_cp = min(model_pokemon::get_query_arr('maxCP'));
+        $max_cp = max(model_pokemon::get_query_arr('maxCP'));
         wp_localize_script('main_js', 'ajaxarr',
             array(
 
@@ -40,7 +46,11 @@ class model_pokemon {
                 'offset' => 0,
                 'length' => count($filtered_poks) - 15, // length for sliced array in ajax handler (without first 15 values)
                 'poks_arr' => $filtered_poks,
-                'coors' => $json_data
+                'coors' => $json_data,
+                'min_hp' => $min_hp,
+                'max_hp' => $max_hp,
+                'min_cp' => $min_cp,
+                'max_cp' => $max_cp
 
             )
         );
@@ -150,7 +160,8 @@ class model_pokemon {
         return $attacks_arr;
     }
     /*
-     * Get 1st stage evolution pokemons arrays from all pokemons data
+     * Get 1st stage evolution pokemons arrays from all pokemons data (arg must be a graphQL schema and contain
+     * "name" in main and "evolutions" objects)
      * */
      static function filtered_pokemons($schema = null) {
         $schema_default = '{
@@ -160,6 +171,7 @@ class model_pokemon {
                 maxCP
                 fleeRate
                 name
+                types
                 evolutions {
                    image
                    maxHP
@@ -205,10 +217,42 @@ class model_pokemon {
         return $true_evo_arr;
     }
     /*
+     * getting unique pokemon's query array (query must be in the main schema object)
+     * */
+    static function get_query_arr( $query ) {
+        $schema = '{
+          pokemons(first: 200) {
+            name
+            ' . $query . '
+            evolutions {
+               name
+            }
+          }
+        }';
+        $poks_arr = self::filtered_pokemons($schema);
+        $query_arr = array();
+        foreach ($poks_arr as $pok) {
+            unset($pok->name);
+            unset($pok->evolutions);
+            if (is_array($pok->$query)) {
+                foreach ($pok->$query as $type) {
+                    array_push($query_arr, $type);
+                }
+            } else {
+                array_push($query_arr, $pok->$query);
+            }
+
+        }
+        $true_query_arr = array_unique($query_arr);
+        return $true_query_arr;
+    }
+    /*
      * "poks_arch_single" shortcode handler
      * */
     function pokemons_arch_shortcode_handler() {
-
+//        echo '<pre>';
+//        var_dump(self::get_query_arr('maxHP'));
+//        echo '</pre>';
         $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
         ob_start();
         view_pokemon::poks_archive_output( $filtered_poks );
@@ -296,17 +340,41 @@ class model_pokemon {
       view_pokemon::single_page_markup();
     }
     /*
-     *
+     * map view button AJAX event handler
      * */
     function map_view_output() {
         $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
         view_pokemon::poks_archive_map_output($filtered_poks);
         die();
     }
+    /*
+     * grid view button AJAX event handler
+     * */
     function grid_view_output() {
         $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
         $link = self::get_archive_page_link();
         view_pokemon::archive_page_items_markup($filtered_poks,$link);
+        die();
+    }
+    function show_filtered() {
+        $link = self::get_archive_page_link();
+        $max_hp = $_POST['max_hp'];
+        $min_hp = $_POST['min_hp'];
+        $max_cp = $_POST['max_cp'];
+        $min_cp = $_POST['min_cp'];
+        $type = $_POST['type'];
+        $poks = self::filtered_pokemons();
+        $true_poks = array();
+        foreach ($poks as $pok) {
+            $type_check = $type == 'All' ? true : in_array($type ,$pok->types);
+            if ($pok->maxHP <= $max_hp && $pok->maxHP >= $min_hp && $pok->maxCP >= $min_cp && $pok->maxCP <= $max_cp && $type_check) {
+                array_push($true_poks, $pok);
+            }
+        }
+        view_pokemon::above_content($true_poks);
+        echo '<div class="pokemons_arch_grid">';
+        view_pokemon::archive_page_items_markup($true_poks,$link, true);
+        echo '</div>';
         die();
     }
     /*
