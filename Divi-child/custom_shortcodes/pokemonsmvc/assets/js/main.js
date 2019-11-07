@@ -336,19 +336,24 @@
                 $("#cp_range").val(ui.values[0] + '-' + ui.values[1]);
             }
         });
+        /*
+        * filter button click event
+        * */
         $('.filter_btn').on('click', function () {
             min_hp = $('#hp_val_min').val();
             max_hp = $('#hp_val_max').val();
             min_cp = $('#cp_val_min').val();
             max_cp = $('#cp_val_max').val();
             type = $('.poks_filter .ui-selectmenu-text').text();
+            act = $('#pokemons_arch_grid_map').length === 1 ? 'show_filtered_map' : 'show_filtered_grid';
             let data_arr = {
-                'action': 'show_filtered',
+                'action': act,
                 'max_hp': max_hp,
                 'min_hp': min_hp,
                 'max_cp': max_cp,
                 'min_cp': min_cp,
-                'type': type
+                'type': type,
+                'filtered_poks': ajaxarr.filtered_poks
 
             };
             $.ajax({
@@ -363,15 +368,32 @@
 
                     $('.pokemons').hide().html(data).show();
                 },
+                error: function(e) {
+                    console.log(e);
+                },
                 complete: function () {
-                    slick_init();
-                    if (window.innerWidth >= 700) {
-                        fixHeights();
+                    if (act === 'show_filtered_map') {
+                        $('.map_btn').prop('disabled', true);
+                        $('.grid_btn').prop('disabled', false);
+                        if (window.innerWidth <= 700) {
+                            setTimeout(fixHeights, 100);
+                        }
+                    } else {
+                        if (window.innerWidth >= 700) {
+                            setTimeout(fixHeights, 100);
+                        }
                     }
+                    slick_init();
+                    $('.view_buttons button').on('click', function () {
+                        $('.view_buttons').children().map(function () {
+                            $('.view_buttons button').prop('disabled', false);
+                        });
+                        $(this).prop('disabled',true);
+                    });
                     $('.map_btn').on('click', function () {
                         let count = $('.counter').text();
                         let data_arr = {
-                            'action': 'to_map',
+                            'action': 'to_map_filtered',
                         };
                         $.ajax({
                             url: ajaxarr.ajaxurl,
@@ -388,9 +410,34 @@
                             complete: function () {
                                 slick_init();
                                 if (window.innerWidth <= 700) {
-                                    fixHeights();
+                                    setTimeout(fixHeights, 100);
                                 }
                                 $('.counter').text(count);
+                            }
+                        })
+                    });
+                    $('.grid_btn').on('click', function () {
+                        let count = $('.counter').text();
+                        let data_arr = {
+                            'action': 'to_grid_filtered',
+                        };
+                        $.ajax({
+                            url: ajaxarr.ajaxurl,
+                            data: data_arr,
+                            type: 'POST',
+                            beforeSend: function () {
+                                $('.preloader').css('display', 'block');
+                            },
+                            success: function (data) {
+                                $('.preloader').css('display', 'none');
+                                $('.pokemons_arch_grid').hide().html(data).show();
+                            },
+                            complete: function () {
+                                slick_init();
+                                $('.counter').text(count);
+                                if (window.innerWidth >= 700) {
+                                    fixHeights();
+                                }
                             }
                         })
                     });

@@ -285,6 +285,10 @@
   display: flex;
   justify-content: space-between;
   margin-top: 30px; }
+  @media (max-width: 700px) {
+    .above_content {
+      flex-direction: column;
+      align-items: center; } }
   .above_content button {
     background-color: transparent;
     border: none;
@@ -310,6 +314,9 @@
     margin: auto 0;
     font-size: 24px;
     font-weight: 600; }
+    @media (max-width: 700px) {
+      .above_content .poks_quantity {
+        margin-bottom: 10px; } }
 
 .pokemons_arch_grid, .custom_poks {
   display: flex;
@@ -526,10 +533,12 @@
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  padding: 30px 0; }
+  padding: 30px 0;
+  overflow-x: hidden; }
   @media (max-width: 1100px) {
     .poks_filter {
-      flex-direction: column; } }
+      flex-direction: column;
+      align-items: center; } }
   .poks_filter:before {
     content: '';
     position: absolute;
@@ -545,10 +554,14 @@
         width: 23%; } }
     @media (max-width: 1100px) {
       .poks_filter fieldset {
-        padding: 0 10%; } }
+        padding: 0 10%;
+        width: 90%; } }
     .poks_filter fieldset .ui-button {
       border: none;
       background: none; }
+      @media (min-width: 1600px) {
+        .poks_filter fieldset .ui-button {
+          width: 85%; } }
       @media (max-width: 1100px) {
         .poks_filter fieldset .ui-button {
           width: 90%;
@@ -565,7 +578,8 @@
     @media (max-width: 1100px) {
       .poks_filter .jqui_slider {
         margin-left: 0;
-        margin-top: 20px; } }
+        margin-top: 20px;
+        width: 90%; } }
     .poks_filter .jqui_slider .jqui_slider_label {
       display: inline-block;
       width: 40%;
@@ -622,6 +636,9 @@
   position: absolute;
   bottom: 3%;
   width: 94%; }
+  @media (max-width: 700px) {
+    .gm-style-iw-d .pokemon_description {
+      display: none; } }
 
 ::-webkit-scrollbar-button {
   width: 6px;

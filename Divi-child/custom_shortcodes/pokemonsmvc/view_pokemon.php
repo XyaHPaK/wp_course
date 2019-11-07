@@ -206,7 +206,7 @@ class view_pokemon {
     /*
      * preloader html markup
      * */
-    function preloader() {
+    static function preloader() {
         ?>
         <div id="fountainG">
             <div id="fountainG_1" class="fountainG"></div>
@@ -296,12 +296,12 @@ class view_pokemon {
     /*
      *
      * */
-    static function poks_archive_map_output($filtered_poks) {
+    static function poks_archive_map_output($filtered_poks, $filtered = null) {
         $arch_query_link = model_pokemon::get_archive_page_link();
         echo '<div class="pokemons_arch_grid_items">';
-            self::archive_page_items_markup($filtered_poks, $arch_query_link);
+            self::archive_page_items_markup($filtered_poks, $arch_query_link, $filtered);
         echo '</div>';
-        echo '<div class="pokemons_arch_grid_map">';
+        echo '<div id="pokemons_arch_grid_map" class="pokemons_arch_grid_map">';
             echo '<div id="map_arch"></div>';
             model_pokemon::arch_map_init();
         echo '</div>';
@@ -423,7 +423,7 @@ class view_pokemon {
                 <input id="cp_val_min" type="hidden" value="<?php echo $min_cp; ?>">
                 <input id="cp_val_max" type="hidden" value="<?php echo $max_cp; ?>">
             </div>
-            <input type="submit" class="filter_btn" value="<?php echo __('Show'); ?>">
+            <input type="submit" class="filter_btn" value="<?php echo __('Show all'); ?>">
         </div>
         <?php
     }
