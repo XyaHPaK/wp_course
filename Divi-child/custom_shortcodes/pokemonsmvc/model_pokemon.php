@@ -20,7 +20,7 @@ class model_pokemon {
         add_action('wp_ajax_nopriv_show_filtered_grid', array(&$this, 'show_filtered_grid'));
         add_action('wp_ajax_show_filtered_map', array(&$this, 'show_filtered_map'));
         add_action('wp_ajax_nopriv_show_filtered_map', array(&$this, 'show_filtered_map'));
-        add_action('wp_ajax_to_map_filtered_grid', array(&$this, 'map_view_filtered'));
+        add_action('wp_ajax_to_map_filtered', array(&$this, 'map_view_filtered'));
         add_action('wp_ajax_nopriv_to_map_filtered', array(&$this, 'map_view_filtered'));
         add_action('wp_ajax_to_grid_filtered', array(&$this, 'grid_view_filtered'));
         add_action('wp_ajax_nopriv_to_grid_filtered', array(&$this, 'grid_view_filtered'));
@@ -44,6 +44,7 @@ class model_pokemon {
         $max_hp = max(model_pokemon::get_query_arr('maxHP'));
         $min_cp = min(model_pokemon::get_query_arr('maxCP'));
         $max_cp = max(model_pokemon::get_query_arr('maxCP'));
+        $arch_link = self::get_archive_page_link();
         wp_localize_script('main_js', 'ajaxarr',
             array(
 
@@ -56,7 +57,8 @@ class model_pokemon {
                 'max_hp' => $max_hp,
                 'min_cp' => $min_cp,
                 'max_cp' => $max_cp,
-                'filtered_poks' => $filtered_data
+                'filtered_poks' => $filtered_data,
+                'arch_link' => $arch_link
 
             )
         );
@@ -559,7 +561,9 @@ class model_pokemon {
                                 if( data ) {
                                     destroy_slick();
                                     $('#show_more a').text('Show More');
+                                    $('.pokemons_arch_grid').hide();
                                     $('#show_more').before(data);
+                                    $('.pokemons_arch_grid').fadeIn(2000);
                                     ajaxarr.offset = Number(ajaxarr.offset) + 15;
                                     if (ajaxarr.offset >= ajaxarr.length) {
                                         count += Number(ajaxarr.length);
@@ -569,12 +573,12 @@ class model_pokemon {
                                         count += Number(ajaxarr.offset);
                                         $('.counter').text(count);
                                     }
-                                    slick_init();
                                 } else {
                                     $('#show_more').remove();
                                 }
                             },
                             complete: function () {
+                                slick_init();
                                 initMap();
                             }
                         });

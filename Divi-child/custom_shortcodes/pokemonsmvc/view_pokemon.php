@@ -365,6 +365,10 @@ class view_pokemon {
         echo  '<div class="pok_detailed">';
             self::single_page_info_markup($data->maxHP , $data->maxCP, $data->fleeRate, $data->name, $data->types, $data->weaknesses, $data->classification, $data->resistant, $data->attacks);
         echo '</div>';
+        echo '<h2 class="map_ttl">' . __('Estimated Habitat') . '</h2>';
+        echo '<div class="map" id="map"></div>';
+        model_pokemon::single_map_init();
+        ?><a class ="print-doc" href="javascript:(print());"><?php echo __('Get/Print PDF'); ?></a><?php
         if ($evolutions) {
             echo '<div class="pok_evo">';
                 echo '<h2>' . __('Next Evolution Stages') . '</h2>';
@@ -381,9 +385,6 @@ class view_pokemon {
                 echo '</div>';
             echo '</div>';
         }
-        echo '<div class="map" id="map"></div>';
-        model_pokemon::single_map_init();
-        ?><a class ="print-doc" href="javascript:(print());"><?php echo __('Get/Print PDF'); ?></a><?php
         die();
     }
     /*

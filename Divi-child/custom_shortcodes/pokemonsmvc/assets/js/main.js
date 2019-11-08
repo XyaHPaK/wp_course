@@ -55,9 +55,10 @@
             verticalSwiping: true,
             asNavFor: '.single_page_slider_nav',
             responsive: [{
-                breakpoint: 600,
+                breakpoint: 601,
                 settings: {
-                    arrows: true
+                    arrows: true,
+                    verticalSwiping: false
                 }
             }]
         });
@@ -73,7 +74,7 @@
             centerPadding: false,
             focusOnSelect: true,
             infinite: false,
-            arrows: true
+            arrows: true,
         });
     }
     /*
@@ -117,7 +118,9 @@
                     if( data ) {
                         destroy_slick();
                         $('#show_more a').text('Show More');
+                        $('.pokemons_arch_grid').hide();
                         $('#show_more').before(data);
+                        $('.pokemons_arch_grid').fadeIn(2000);
                         ajaxarr.offset = Number(ajaxarr.offset) + 15;
                         if (ajaxarr.offset >= ajaxarr.length) {
                             count += Number(ajaxarr.length);
@@ -127,14 +130,14 @@
                             count += Number(ajaxarr.offset);
                             $('.counter').text(count);
                         }
-                        slick_init();
                     } else {
                         $('#show_more').remove();
                     }
                 },
                 complete: function () {
                     /*makes elents equal to each other after succesfull ajax request */
-                    setTimeout(fixHeights, 100);
+                    fixHeights();
+                    slick_init();
                 }
             });
         });
@@ -172,11 +175,11 @@
                         height: 'initial'
                     });
                     $('.preloader').css('display', 'none');
-                    $('.pokemons').show().html(data);
-                    fixHeights();
+                    $('.pokemons').hide().html(data);
                 },
                 complete: function () {
-                    sp_slick_init();
+
+                    setTimeout(sp_slick_init, 100);
                     if ($('.single_page_slider_nav').children().length < 2) {
                         $('.single_page_slider_nav').css('display', 'none');
                         $('.single_page_slider').css({
@@ -184,9 +187,11 @@
                             'width': '100%'
                         });
                     } else {
-                        sp_slick_nav_init();
+                    setTimeout(sp_slick_nav_init, 100);
                     }
-                    fix_sliders_heights();
+                    setTimeout(fix_sliders_heights, 150);
+                    setTimeout(fixHeights, 150);
+                    $('.pokemons').fadeIn(800);
                 }
             })
         }
@@ -218,7 +223,7 @@
                 success: function (data) {
                     $('.preloader').css('display', 'none');
 
-                    $('.pokemons_arch_grid').hide().html(data).show();
+                    $('.pokemons_arch_grid').hide().html(data).fadeIn(2000);
                 },
                 complete: function () {
                     slick_init();
@@ -247,7 +252,7 @@
                 },
                 success: function (data) {
                     $('.preloader').css('display', 'none');
-                    $('.pokemons_arch_grid').hide().html(data).show();
+                    $('.pokemons_arch_grid').hide().html(data).fadeIn(2000);
                 },
                 complete: function () {
                     slick_init();
@@ -271,7 +276,9 @@
                                     if( data ) {
                                         destroy_slick();
                                         $('#show_more a').text('Show More');
+                                        $('.pokemons_arch_grid').hide();
                                         $('#show_more').before(data);
+                                        $('.pokemons_arch_grid').fadeIn(2000);
                                         ajaxarr.offset = Number(ajaxarr.offset) + 15;
                                         if (ajaxarr.offset >= ajaxarr.length) {
                                             count += Number(ajaxarr.length);
@@ -282,7 +289,7 @@
                                             $('.counter').text(count);
                                         }
                                         console.log(count);
-                                        slick_init();
+
                                     } else {
                                         $('#show_more').remove();
                                     }
@@ -290,6 +297,7 @@
                                 complete: function () {
                                     /*makes elents equal to each other after succesfull ajax request */
                                     setTimeout(fixHeights, 100);
+                                    slick_init();
                                 }
                             });
                         });
@@ -340,6 +348,9 @@
         * filter button click event
         * */
         $('.filter_btn').on('click', function () {
+            if (window.location.href !== ajaxarr.arch_link) {
+                window.location.href = ajaxarr.arch_link
+            }
             min_hp = $('#hp_val_min').val();
             max_hp = $('#hp_val_max').val();
             min_cp = $('#cp_val_min').val();
@@ -366,7 +377,7 @@
                 success: function (data) {
                     $('.preloader').css('display', 'none');
 
-                    $('.pokemons').hide().html(data).show();
+                    $('.pokemons').hide().html(data).fadeIn(2000);
                 },
                 error: function(e) {
                     console.log(e);
@@ -405,7 +416,7 @@
                             success: function (data) {
                                 $('.preloader').css('display', 'none');
 
-                                $('.pokemons_arch_grid').hide().html(data).show();
+                                $('.pokemons_arch_grid').hide().html(data).fadeIn(2000);
                             },
                             complete: function () {
                                 slick_init();
@@ -430,7 +441,7 @@
                             },
                             success: function (data) {
                                 $('.preloader').css('display', 'none');
-                                $('.pokemons_arch_grid').hide().html(data).show();
+                                $('.pokemons_arch_grid').hide().html(data).fadeIn(2000);
                             },
                             complete: function () {
                                 slick_init();
