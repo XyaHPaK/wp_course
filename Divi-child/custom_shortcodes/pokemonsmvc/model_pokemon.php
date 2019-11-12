@@ -2,40 +2,54 @@
 namespace pokemons\mvc;
 class model_pokemon {
     function __construct() {
-
+        /*Adding [poks_arch_single] shortcode*/
         add_shortcode('poks_arch_single', array( &$this, 'pokemons_arch_shortcode_handler' ));
+        /*Adding [custom_poks] shortcode*/
         add_shortcode('custom_poks', array( &$this, 'custom_poks_handler' ));
+        /*Adding [poks_filter] shortcode*/
         add_shortcode('poks_filter', array(&$this, 'filtering_shortcode_handler'));
+        /*Scripts and Styles enques hook*/
         add_action('wp_enqueue_scripts', array(&$this, 'enqueues'));
+        /*Script localize hook*/
         add_action('wp_enqueue_scripts', array(&$this, 'localize'));
+        /*
+         * AJAX handlers hooks*/
+            /*load more button ajax handler hooks*/
         add_action('wp_ajax_load_more', array(&$this, 'poks_load'));
         add_action('wp_ajax_nopriv_load_more', array(&$this, 'poks_load'));
+            /*"permalinks" ajax handler hooks*/
         add_action('wp_ajax_to_single', array(&$this, 'single_page_output'));
         add_action('wp_ajax_nopriv_to_single', array(&$this, 'single_page_output'));
+            /*map view button on archive page ajax handler hooks*/
         add_action('wp_ajax_to_map', array(&$this, 'map_view_output'));
         add_action('wp_ajax_nopriv_to_map', array(&$this, 'map_view_output'));
+            /*grid view button on archive page ajax handler hooks*/
         add_action('wp_ajax_to_grid', array(&$this, 'grid_view_output'));
         add_action('wp_ajax_nopriv_to_grid', array(&$this, 'grid_view_output'));
+            /*"filter" button on grid view ajax handler hooks*/
         add_action('wp_ajax_show_filtered_grid', array(&$this, 'show_filtered_grid'));
         add_action('wp_ajax_nopriv_show_filtered_grid', array(&$this, 'show_filtered_grid'));
+            /*"filter" button on map view ajax handler hooks*/
         add_action('wp_ajax_show_filtered_map', array(&$this, 'show_filtered_map'));
         add_action('wp_ajax_nopriv_show_filtered_map', array(&$this, 'show_filtered_map'));
+            /*map view button after filtering ajax handler hooks*/
         add_action('wp_ajax_to_map_filtered', array(&$this, 'map_view_filtered'));
         add_action('wp_ajax_nopriv_to_map_filtered', array(&$this, 'map_view_filtered'));
+            /*grid view button after filtering ajax handler hooks*/
         add_action('wp_ajax_to_grid_filtered', array(&$this, 'grid_view_filtered'));
         add_action('wp_ajax_nopriv_to_grid_filtered', array(&$this, 'grid_view_filtered'));
     }
+    /*
+     * Scripts and styles enqueue method
+     * */
     function enqueues() {
         wp_enqueue_style( 'pokemon_page_styles', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/css/pokemon_page.css');
-        wp_enqueue_style( 'slick_css', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick.css');
-        wp_enqueue_style( 'slick_theme_css', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick-theme.css');
-        wp_enqueue_style( 'jquery_ui_css', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/jquery-ui/jquery-ui.css');
-
-        wp_enqueue_script('jquery_ui_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/jquery-ui/jquery-ui.js', array('jquery'));
-        wp_register_script('slick_min_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/slick/slick.min.js', array('jquery'));
-        wp_enqueue_script('main_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/js/main.js', array('jquery', 'slick_min_js'));
+        wp_enqueue_script('main_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/js/main.js', array('jquery'));
 
     }
+    /*
+     * localize script method
+     * */
     function localize() {
         $filtered_poks = self::filtered_pokemons();
         $coors_data = self::get_data_from_file('coors.json');
@@ -72,7 +86,7 @@ class model_pokemon {
     /*
      * Get data from https://graphql-pokemon.now.sh/ graphQL server
      * */
-    public function get_pokemons_data($schema) {
+    public static function get_pokemons_data($schema) {
         $url = 'https://graphql-pokemon.now.sh/';
         $ret = wp_remote_post( $url, array(
             'timeout'     => 5,
@@ -203,7 +217,7 @@ class model_pokemon {
     /*
      * This method creates a 2nd and more pokemons evolution stage names array
      * */
-    public function evolutions_array() {
+    public static function evolutions_array() {
         $schema = '{
               pokemons(first:200) {
                 evolutions {
@@ -361,12 +375,18 @@ class model_pokemon {
         view_pokemon::archive_page_items_markup($filtered_poks,$link);
         die();
     }
+    /*
+     *  map view button after "filter" buuton clicked AJAX handler
+     * */
     function map_view_filtered() {
         $data = self::get_data_from_file('filtered_data.json');
         $data = json_decode($data);
         view_pokemon::poks_archive_map_output($data, true);
         die();
     }
+    /*
+     *  grid view button after "filter" buuton clicked AJAX handler
+     * */
     function grid_view_filtered() {
         $data = self::get_data_from_file('filtered_data.json');
         $link = self::get_archive_page_link();
@@ -375,7 +395,7 @@ class model_pokemon {
         die();
     }
     /*
-     * filter execution button button AJAX event handler
+     * filter execution button button AJAX event handler on grid view
      * */
     function show_filtered_grid() {
         $link = self::get_archive_page_link();
@@ -411,6 +431,9 @@ class model_pokemon {
         echo '</div>';
         die();
     }
+    /*
+     * filter execution button button AJAX event handler on map view
+     * */
     function show_filtered_map() {
         $link = self::get_archive_page_link();
         $max_hp = $_POST['max_hp'];
@@ -446,7 +469,7 @@ class model_pokemon {
         die();
     }
     /*
-     * Initialize a map from google
+     * Initialize a map from google on map view archive page
      * */
     static function arch_map_init() {
         ?>
@@ -589,6 +612,9 @@ class model_pokemon {
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaawMpqt4K0p0D2IFqSWOQmphuNblK0aM&callback=initMap"></script>
         <?php
     }
+    /*
+     * Map init method on single pages
+     * */
     static function single_map_init () {
         ?>
         <script>

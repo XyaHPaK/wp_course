@@ -101,7 +101,7 @@ class view_pokemon {
     /*
      * Slider markup for single page
      * */
-    function single_page_slider_inner($img_class,$image) {
+    static function single_page_slider_inner($img_class,$image) {
         ?>
         <div class="pokemon_cont">
                 <div class="<?php echo $img_class ?>">
@@ -113,7 +113,7 @@ class view_pokemon {
     /*
      * Single page markup
      * */
-    function single_page_info_markup($hp , $cp, $flee_rate, $name, $types, $weaknesses, $classification, $resistant, $attacks) {
+    static function single_page_info_markup($hp , $cp, $flee_rate, $name, $types, $weaknesses, $classification, $resistant, $attacks) {
         ?>
         <h1><?php echo $name ?></h1>
         <div class="pok_detailed_info">
@@ -221,7 +221,7 @@ class view_pokemon {
         <?php
     }
     /*
-     *
+     *  Archive page items markup output
      * */
     static function archive_page_items_markup($filtered_poks, $arch_query_link, $filtered = null) {
         foreach ($filtered_poks as $pok) {
@@ -255,6 +255,9 @@ class view_pokemon {
             <?php
         }
     }
+    /*
+     * Pokemons counter and view buttons markup output
+     * */
     static function above_content($filtered_poks) {
         ?>
         <div class="above_content">
@@ -294,7 +297,7 @@ class view_pokemon {
         <?php
     }
     /*
-     *
+     * map view markup output
      * */
     static function poks_archive_map_output($filtered_poks, $filtered = null) {
         $arch_query_link = model_pokemon::get_archive_page_link();

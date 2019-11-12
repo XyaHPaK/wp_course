@@ -1,7 +1,18 @@
 body {
   overflow-x: hidden; }
-  body header {
-    overflow: hidden; }
+  body header:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    z-index: -1;
+    background-color: #efeff1;
+    height: 60px; }
+    @media (max-width: 980px) {
+      body header:after {
+        height: 32px; } }
 
 .psy_header {
   border-top: 40px solid #e6ba5f;
@@ -58,17 +69,6 @@ body {
       margin-top: 35px;
       padding: 0 0 0 75px !important;
       position: relative; }
-      .psy_header .container .header_menu:after {
-        content: '';
-        position: absolute;
-        width: 100vw;
-        left: 50%;
-        right: 0;
-        bottom: 0;
-        top: 0;
-        transform: translateX(-50%);
-        z-index: -1;
-        background-color: #efeff1; }
       .psy_header .container .header_menu .mobile_menu_bar {
         padding-bottom: 0; }
       .psy_header .container .header_menu #top-menu li {
