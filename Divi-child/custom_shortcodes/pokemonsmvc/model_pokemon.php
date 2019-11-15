@@ -27,53 +27,29 @@ class model_pokemon {
         add_action('wp_ajax_to_grid', array(&$this, 'grid_view_output'));
         add_action('wp_ajax_nopriv_to_grid', array(&$this, 'grid_view_output'));
             /*"filter" button on grid view ajax handler hooks*/
-        add_action('wp_ajax_show_filtered_grid', array(&$this, 'show_filtered_grid'));
-        add_action('wp_ajax_nopriv_show_filtered_grid', array(&$this, 'show_filtered_grid'));
-            /*"filter" button on map view ajax handler hooks*/
-        add_action('wp_ajax_show_filtered_map', array(&$this, 'show_filtered_map'));
-        add_action('wp_ajax_nopriv_show_filtered_map', array(&$this, 'show_filtered_map'));
-            /*map view button after filtering ajax handler hooks*/
-        add_action('wp_ajax_to_map_filtered', array(&$this, 'map_view_filtered'));
-        add_action('wp_ajax_nopriv_to_map_filtered', array(&$this, 'map_view_filtered'));
-            /*grid view button after filtering ajax handler hooks*/
-        add_action('wp_ajax_to_grid_filtered', array(&$this, 'grid_view_filtered'));
-        add_action('wp_ajax_nopriv_to_grid_filtered', array(&$this, 'grid_view_filtered'));
+        add_action('wp_ajax_show_filtered', array(&$this, 'show_filtered'));
+        add_action('wp_ajax_nopriv_show_filtered', array(&$this, 'show_filtered'));
     }
     /*
      * Scripts and styles enqueue method
      * */
     function enqueues() {
         wp_enqueue_style( 'pokemon_page_styles', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/css/pokemon_page.css');
-        wp_enqueue_script('main_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/js/main.js', array('jquery'));
-
+        wp_enqueue_script('minify_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/js/minify.js', array('jquery'));
+        wp_enqueue_script('main_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/js/main.js', array('jquery', 'minify_js'));
     }
     /*
      * localize script method
      * */
     function localize() {
-        $filtered_poks = self::filtered_pokemons();
         $coors_data = self::get_data_from_file('coors.json');
-        $filtered_data = self::get_data_from_file('filtered_data.json');
-        $min_hp = min(model_pokemon::get_query_arr('maxHP'));
-        $max_hp = max(model_pokemon::get_query_arr('maxHP'));
-        $min_cp = min(model_pokemon::get_query_arr('maxCP'));
-        $max_cp = max(model_pokemon::get_query_arr('maxCP'));
         $arch_link = self::get_archive_page_link();
         wp_localize_script('main_js', 'ajaxarr',
             array(
-
                 'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                'offset' => 0,
-                'length' => count($filtered_poks) - 15, // length for sliced array in ajax handler (without first 15 values)
-                'poks_arr' => $filtered_poks,
+                'offset' => 15,
                 'coors' => $coors_data,
-                'min_hp' => $min_hp,
-                'max_hp' => $max_hp,
-                'min_cp' => $min_cp,
-                'max_cp' => $max_cp,
-                'filtered_poks' => $filtered_data,
                 'arch_link' => $arch_link
-
             )
         );
     }
@@ -206,52 +182,27 @@ class model_pokemon {
         $true_schema = $schema ? $schema : $schema_default;
         $pokemons = self::get_pokemons_data($true_schema);
         $filtered_poks = array();
-        $evo_arr = self::evolutions_array();
+         $evo_arr = array();
+         foreach ($pokemons as $pokemon) {
+             if ($pokemon->evolutions !== null) {
+                 $evo = $pokemon->evolutions;
+                 foreach ($evo as $e) {
+                     array_push($evo_arr,$e->name);
+                 }
+             }
+         }
+         $true_evo_arr = array_unique($evo_arr);
         foreach ($pokemons as $key => $pokemon) {
-            if ($pokemon->evolutions && !in_array($pokemon->name, $evo_arr)) {
+            if ($pokemon->evolutions && !in_array($pokemon->name, $true_evo_arr)) {
                 array_push($filtered_poks,$pokemon);
             }
         }
         return $filtered_poks;
     }
     /*
-     * This method creates a 2nd and more pokemons evolution stage names array
-     * */
-    public static function evolutions_array() {
-        $schema = '{
-              pokemons(first:200) {
-                evolutions {
-                   name
-                }
-              }
-            }';
-        $pokemons = self::get_pokemons_data($schema);
-        $evo_arr = array();
-        foreach ($pokemons as $pokemon) {
-            if ($pokemon->evolutions !== null) {
-                $evo = $pokemon->evolutions;
-                foreach ($evo as $e) {
-                    array_push($evo_arr,$e->name);
-                }
-            }
-        }
-        $true_evo_arr = array_unique($evo_arr);
-        return $true_evo_arr;
-    }
-    /*
      * getting unique pokemon's query array (query must be in the main schema object)
      * */
-    static function get_query_arr( $query ) {
-        $schema = '{
-          pokemons(first: 200) {
-            name
-            ' . $query . '
-            evolutions {
-               name
-            }
-          }
-        }';
-        $poks_arr = self::filtered_pokemons($schema);
+    static function get_query_arr( $poks_arr, $query ) {
         $query_arr = array();
         foreach ($poks_arr as $pok) {
             unset($pok->name);
@@ -269,14 +220,77 @@ class model_pokemon {
         return $true_query_arr;
     }
     /*
+     * returns array with url queries
+     * */
+    static function get_url_queries () {
+        $url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        $parts = parse_url($url);
+        parse_str($parts['query'], $query);
+        return $query;
+    }
+    /*
+     * returns pokemons arr within url queries range
+     * */
+    static function get_poks_within_url_queries() {
+        $query = self::get_url_queries();
+        $true_poks = null;
+        if ($query || $_POST !== array()) {
+            $max_hp = $query ? $query['hp_val_max'] : $_POST['max_hp'];
+            $min_hp = $query ? $query['hp_val_min'] : $_POST['min_hp'];
+            $max_cp = $query ? $query['cp_val_max'] : $_POST['max_cp'];
+            $min_cp = $query ? $query['cp_val_min'] : $_POST['min_cp'];
+            $type = $query ? $query['types'] : $_POST['type'];
+            $poks = self::filtered_pokemons();
+            $true_poks = array();
+            foreach ($poks as $pok) {
+                $type_check = $type == 'All' ? true : in_array($type ,$pok->types);
+                if ($pok->maxHP <= $max_hp && $pok->maxHP >= $min_hp && $pok->maxCP >= $min_cp && $pok->maxCP <= $max_cp && $type_check) {
+                    array_push($true_poks, $pok);
+                }
+            }
+        }
+        return $true_poks;
+    }
+    /*
      * "poks_arch_single" shortcode handler
      * */
     function pokemons_arch_shortcode_handler() {
-        $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
-        ob_start();
-        view_pokemon::poks_archive_output( $filtered_poks );
-        $out = ob_get_clean();
-        return $out;
+        $query = self::get_url_queries();
+        $map_data = $_POST['map_data'];
+        $true_poks = self::get_poks_within_url_queries() ? self::get_poks_within_url_queries() : array_slice(self::filtered_pokemons(), 0, 15);
+        $show_more = count($true_poks) >= 15 ? true : null;
+        $fc = fopen(__DIR__ . '/assets/filtered_data.json','w');
+        fwrite($fc, json_encode($true_poks));
+        fclose($fc);
+        ?>
+        <script>
+            filtered_pokemons = '<? echo self::get_data_from_file('filtered_data.json');?>';
+        </script>
+        <?php
+        if (!$query['id']) {
+            if ($map_data) {
+                ob_start();
+                view_pokemon::poks_archive_map_output($true_poks, $show_more);
+                $out = ob_get_clean();
+                return $out;
+            } else {
+                ob_start();
+                view_pokemon::poks_archive_output( $true_poks, $show_more );
+                $out = ob_get_clean();
+                return $out;
+            }
+        } else {
+            ob_start();
+            echo '<div class="pokemons"></div>';
+            $out = ob_get_clean();
+            return $out;
+        }
+
+//        $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
+//        ob_start();
+//        view_pokemon::poks_archive_output( $filtered_poks );
+//        $out = ob_get_clean();
+//        return $out;
     }
     /*
      * "poks_filter" shortcode handler
@@ -363,7 +377,8 @@ class model_pokemon {
      * */
     function map_view_output() {
         $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
-        view_pokemon::poks_archive_map_output($filtered_poks);
+        $show_more = count($filtered_poks) >= 15 ? true : null;
+        view_pokemon::poks_archive_map_output($filtered_poks, $show_more);
         die();
     }
     /*
@@ -371,39 +386,22 @@ class model_pokemon {
      * */
     function grid_view_output() {
         $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
+        $show_more = count($filtered_poks) >= 15 ? true : null;
         $link = self::get_archive_page_link();
-        view_pokemon::archive_page_items_markup($filtered_poks,$link);
+        view_pokemon::archive_page_items_markup($filtered_poks, $link, $show_more);
         die();
     }
     /*
-     *  map view button after "filter" buuton clicked AJAX handler
+     * filter button AJAX event handler
      * */
-    function map_view_filtered() {
-        $data = self::get_data_from_file('filtered_data.json');
-        $data = json_decode($data);
-        view_pokemon::poks_archive_map_output($data, true);
-        die();
-    }
-    /*
-     *  grid view button after "filter" buuton clicked AJAX handler
-     * */
-    function grid_view_filtered() {
-        $data = self::get_data_from_file('filtered_data.json');
-        $link = self::get_archive_page_link();
-        $data = json_decode($data);
-        view_pokemon::archive_page_items_markup($data, $link, true);
-        die();
-    }
-    /*
-     * filter execution button button AJAX event handler on grid view
-     * */
-    function show_filtered_grid() {
+    function show_filtered() {
         $link = self::get_archive_page_link();
         $max_hp = $_POST['max_hp'];
         $min_hp = $_POST['min_hp'];
         $max_cp = $_POST['max_cp'];
         $min_cp = $_POST['min_cp'];
         $type = $_POST['type'];
+        $map_data = $_POST['map_data'];
         $poks = self::filtered_pokemons();
         $true_poks = array();
         foreach ($poks as $pok) {
@@ -420,52 +418,12 @@ class model_pokemon {
             filtered_pokemons = '<? echo self::get_data_from_file('filtered_data.json');?>';
         </script>
         <?php
-        echo '<div id="filter_clicked">';
-            echo '<div class="preloader">';
-                     view_pokemon::preloader();
-            echo '</div>';
-            view_pokemon::above_content($true_poks);
-            echo '<div class="pokemons_arch_grid">';
-                view_pokemon::archive_page_items_markup($true_poks,$link, true);
-            echo '</div>';
-        echo '</div>';
-        die();
-    }
-    /*
-     * filter execution button button AJAX event handler on map view
-     * */
-    function show_filtered_map() {
-        $link = self::get_archive_page_link();
-        $max_hp = $_POST['max_hp'];
-        $min_hp = $_POST['min_hp'];
-        $max_cp = $_POST['max_cp'];
-        $min_cp = $_POST['min_cp'];
-        $type = $_POST['type'];
-        $poks = self::filtered_pokemons();
-        $true_poks = array();
-        foreach ($poks as $pok) {
-            $type_check = $type == 'All' ? true : in_array($type ,$pok->types);
-            if ($pok->maxHP <= $max_hp && $pok->maxHP >= $min_hp && $pok->maxCP >= $min_cp && $pok->maxCP <= $max_cp && $type_check) {
-                array_push($true_poks, $pok);
-            }
+        if ($map_data == 1) {
+            view_pokemon::poks_archive_map_output($true_poks);
+        } else {
+            view_pokemon::archive_page_items_markup($true_poks, $link);
         }
-        $fc = fopen(__DIR__ . '/assets/filtered_data.json','w');
-        fwrite($fc, json_encode($true_poks));
-        fclose($fc);
-        ?>
-        <script>
-            filtered_pokemons = '<? echo self::get_data_from_file('filtered_data.json');?>';
-        </script>
-        <?php
-        echo '<div id="filter_clicked">';
-            echo '<div class="preloader">';
-                view_pokemon::preloader();
-            echo '</div>';
-            view_pokemon::above_content($true_poks);
-        echo '</div>';
-        echo '<div class="pokemons_arch_grid">';
-            self::map_view_filtered();
-        echo '</div>';
+
         die();
     }
     /*
@@ -479,7 +437,7 @@ class model_pokemon {
             function initMap() {
                 let locations = JSON.parse(ajaxarr.coors);
                 let true_filtered_poks = null;
-                if (document.getElementById('filter_clicked')) {
+                if (document.getElementById('pokemons_arch_grid').dataset.filt == 1) {
                     let filtered_poks = JSON.parse(filtered_pokemons);
                     true_filtered_poks = [];
                     for (let i = 0; i < locations.length; i++) {
@@ -490,7 +448,7 @@ class model_pokemon {
                         }
                     }
                 }
-                let offset = 15 + Number(ajaxarr.offset);
+                let offset = Number(ajaxarr.offset);
                 let first_locations = true_filtered_poks === null ? locations.splice(0, offset) : true_filtered_poks;
                 let map = new google.maps.Map(document.getElementById('map_arch'), {
                     zoom: 5,
@@ -548,66 +506,6 @@ class model_pokemon {
                     });
                 })(jQuery);
             }
-            (function($){
-                $(document).ready(function() {
-                    /*
-                     * This func execution will destroy earlier initialized slick slider
-                     * */
-                    function destroy_slick() {
-                        if ($('.slider_wrap').hasClass('slick-initialized')) {
-                            $('.slider_wrap').slick('destroy');
-                        }
-                    }
-                    /*
-                     * This functions execution will init slick sliders
-                     * */
-                    function slick_init() {
-                        $('.slider_wrap').slick({
-                            infinite: false
-                        });
-                    }
-                    $('#show_more').click(function ( event ){
-                        let count = 15;
-                        event.preventDefault();
-                        $('#show_more a').text('loading...');
-                        let data_arr = {
-                            'action': 'load_more',
-                            'query': ajaxarr.poks_arr,
-                            'offset': ajaxarr.offset,
-                            'length': ajaxarr.length
-                        };
-                        $.ajax({
-                            url:ajaxarr.ajaxurl,
-                            data:data_arr,
-                            type:'POST',
-                            success:function(data){
-                                if( data ) {
-                                    destroy_slick();
-                                    $('#show_more a').text('Show More');
-                                    $('.pokemons_arch_grid').hide();
-                                    $('#show_more').before(data);
-                                    $('.pokemons_arch_grid').fadeIn(2000);
-                                    ajaxarr.offset = Number(ajaxarr.offset) + 15;
-                                    if (ajaxarr.offset >= ajaxarr.length) {
-                                        count += Number(ajaxarr.length);
-                                        $('.counter').text(count);
-                                        $("#show_more").remove();
-                                    } else {
-                                        count += Number(ajaxarr.offset);
-                                        $('.counter').text(count);
-                                    }
-                                } else {
-                                    $('#show_more').remove();
-                                }
-                            },
-                            complete: function () {
-                                slick_init();
-                                initMap();
-                            }
-                        });
-                    });
-                });
-            })(jQuery);
         </script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaawMpqt4K0p0D2IFqSWOQmphuNblK0aM&callback=initMap"></script>
         <?php

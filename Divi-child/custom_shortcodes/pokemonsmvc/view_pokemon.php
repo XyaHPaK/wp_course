@@ -223,7 +223,7 @@ class view_pokemon {
     /*
      *  Archive page items markup output
      * */
-    static function archive_page_items_markup($filtered_poks, $arch_query_link, $filtered = null) {
+    static function archive_page_items_markup($filtered_poks, $arch_query_link, $show_more = null) {
         foreach ($filtered_poks as $pok) {
             $evolutions = $pok->evolutions;
             $link = $arch_query_link . '?id=' . ($pok->name);
@@ -247,7 +247,7 @@ class view_pokemon {
             echo '</div>';
             echo '</div>';
         }
-        if (!$filtered) {
+        if ($show_more) {
             ?>
             <div id="show_more" class="pokemon_cont show_more">
                 <a><?php echo __('Show More'); ?></a>
@@ -278,33 +278,37 @@ class view_pokemon {
     /*
      * outputs data from the earlier filtered array to the screen (only first 15 from array)
      * */
-    static function poks_archive_output( $filtered_poks ) {
+    static function poks_archive_output( $filtered_poks, $show_more = null ) {
         $arch_query_link = model_pokemon::get_archive_page_link();
-        $path = parse_url($arch_query_link, PHP_URL_PATH); ?>
-        <div class="pokemons">
+        $length = count(model_pokemon::filtered_pokemons());
+        ?>
+        <div class="pokemons" data-pok_length ="<?php echo $length; ?>">
             <div class="preloader">
                 <?php self::preloader(); ?>
             </div>
-            <?php if ($path == $_SERVER['REQUEST_URI']) {
-                self::above_content($filtered_poks);
-                ?>
-                <div class="pokemons_arch_grid">
-                <?php
-               self::archive_page_items_markup($filtered_poks, $arch_query_link);
-               ?></div><?php
-            } ?>
+                <?php self::above_content($filtered_poks); ?>
+                <div class="pokemons_arch_grid" id="pokemons_arch_grid" data-filt="0">
+                    <?php self::archive_page_items_markup($filtered_poks, $arch_query_link);
+                    if ($show_more) {
+                    ?>
+                        <div id="show_more" class="pokemon_cont show_more">
+                            <a><?php echo __('Show More'); ?></a>
+                        </div>
+                    <?php } ?>
+                </div>
         </div>
         <?php
+
     }
     /*
      * map view markup output
      * */
-    static function poks_archive_map_output($filtered_poks, $filtered = null) {
+    static function poks_archive_map_output($filtered_poks, $show_more = null) {
         $arch_query_link = model_pokemon::get_archive_page_link();
         echo '<div class="pokemons_arch_grid_items">';
-            self::archive_page_items_markup($filtered_poks, $arch_query_link, $filtered);
+            self::archive_page_items_markup($filtered_poks, $arch_query_link, $show_more);
         echo '</div>';
-        echo '<div id="pokemons_arch_grid_map" class="pokemons_arch_grid_map">';
+        echo '<div id="pokemons_arch_grid_map" class="pokemons_arch_grid_map" data-map="0">';
             echo '<div id="map_arch"></div>';
             model_pokemon::arch_map_init();
         echo '</div>';
@@ -314,30 +318,10 @@ class view_pokemon {
      * */
     static function poks_load_more() {
         $offset = $_POST['offset'];
-        $poks_arr = array_slice($_POST['query'],15);
+        $poks_arr = model_pokemon::filtered_pokemons();
         $sliced_poks_arr = array_slice($poks_arr, $offset, 15);
-        foreach ($sliced_poks_arr as $pok) {
-            $evolutions = $pok['evolutions'];
-            $link = model_pokemon::get_archive_page_link() . '?id=' . $pok['name'];
-            echo '<div class="grid_item">';
-                echo '<div class="slider_wrap">';
-                    ?><a class="pok_link" href="<?php echo $link; ?>"><?php
-                        echo self::pok_image($pok['image'], $pok['name']);
-                    ?></a><?php
-                    if ($evolutions) {
-                        foreach ($evolutions as $evo_pok) {
-                            $link = model_pokemon::get_archive_page_link() . '?id=' . $evo_pok['name'];
-                            ?><a class="pok_link" href="<?php echo $link; ?>"><?php
-                                echo self::pok_image($evo_pok['image'], $pok['name']);
-                            ?></a><?php
-                        }
-                    }
-                echo'</div>';
-                echo '<div data-desc="' . $pok['name'] . '">';
-                    echo self::pok_description($pok['maxHP'], $pok['maxCP'], $pok['fleeRate'], $pok['name']);
-                echo '</div>';
-            echo '</div>';
-        }
+        $arch_query_link = model_pokemon::get_archive_page_link();
+        self::archive_page_items_markup($sliced_poks_arr, $arch_query_link);
         die();
     }
     /*
@@ -394,41 +378,72 @@ class view_pokemon {
      * filtering forms markup
      * */
     static function filter_markup() {
-        $types = model_pokemon::get_query_arr('types');
-        $min_hp = min(model_pokemon::get_query_arr('maxHP'));
-        $max_hp = max(model_pokemon::get_query_arr('maxHP'));
-        $min_cp = min(model_pokemon::get_query_arr('maxCP'));
-        $max_cp = max(model_pokemon::get_query_arr('maxCP'));
+        $schema = '{
+          pokemons(first: 200) {
+            name
+            types
+            maxHP
+            maxCP
+            evolutions {
+               name
+            }
+          }
+        }';
+        $url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        $url_parts = parse_url($url);
+        $arch_url = model_pokemon::get_archive_page_link();
+        $arch_url_parts = parse_url($arch_url);
+
+        $action = $url_parts['path'] == $arch_url_parts['path'] ? '/' : $arch_url;
+        $query = model_pokemon::get_url_queries();
+        $poks_arr = model_pokemon::filtered_pokemons($schema);
+        $types = model_pokemon::get_query_arr($poks_arr,'types');
+        $min_hp = min(model_pokemon::get_query_arr($poks_arr,'maxHP'));
+        $max_hp = max(model_pokemon::get_query_arr($poks_arr,'maxHP'));
+        $min_cp = min(model_pokemon::get_query_arr($poks_arr,'maxCP'));
+        $max_cp = max(model_pokemon::get_query_arr($poks_arr,'maxCP'));
         ?>
-        <div class="poks_filter">
+        <form class="poks_filter" action="<?php echo $action; ?>">
             <fieldset>
                 <label for="types"><?php echo __('Type:'); ?></label>
                 <select name="types" id="types">
                     <?php foreach ($types as $key => $type) {
                         if ($key == 0) {
+                            if ($query == 'All') {
+                            ?>
+                                <option selected><?php echo __('All'); ?></option>
+                            <?php } else {
+                            ?>
+                                <option><?php echo __('All'); ?></option>
+                            <?php
+                            }
+                        }
+                        if ($type == $query['types']) {
                         ?>
-                            <option><?php echo __('All'); ?></option>
-                        <?php } ?>
-                        <option><?php echo $type; ?></option>
-                    <?php } ?>
+                            <option selected><?php echo $type; ?></option>
+                        <?php } else {
+                        ?>
+                            <option><?php echo $type; ?></option>
+                    <?php }
+                    } ?>
                 </select>
             </fieldset>
             <div class="jqui_slider">
                 <label class="jqui_slider_label" for="hp_range"><?php echo __('HP:'); ?></label>
                 <input class="jqui_slider_values" id="hp_range" type="text" readonly>
                 <div id="hp_slider"></div>
-                <input id="hp_val_min" type="hidden" value="<?php echo $min_hp; ?>">
-                <input id="hp_val_max" type="hidden" value="<?php echo $max_hp; ?>">
+                    <input id="hp_val_min" type="hidden" value="<?php echo $min_hp; ?>" name="hp_val_min">
+                    <input id="hp_val_max" type="hidden" value="<?php echo $max_hp; ?>" name="hp_val_max">
             </div>
             <div class="jqui_slider">
                 <label class="jqui_slider_label" for="cp_range"><?php echo __('CP:'); ?></label>
                 <input class="jqui_slider_values" id="cp_range" type="text" readonly>
                 <div id="cp_slider"></div>
-                <input id="cp_val_min" type="hidden" value="<?php echo $min_cp; ?>">
-                <input id="cp_val_max" type="hidden" value="<?php echo $max_cp; ?>">
+                    <input id="cp_val_min" type="hidden" value="<?php echo $min_cp; ?>" name="cp_val_min">
+                    <input id="cp_val_max" type="hidden" value="<?php echo $max_cp; ?>" name="cp_val_max">
             </div>
             <input type="submit" class="filter_btn" value="<?php echo __('Show all'); ?>">
-        </div>
+        </form>
         <?php
     }
 }
