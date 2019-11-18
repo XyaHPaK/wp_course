@@ -193,7 +193,7 @@ class view_pokemon {
                                 <?php }
                             }
                     echo'</div>';
-                    echo self::pok_description($evo_pok->maxHP, $evo_pok->maxCP, $evo_pok->fleeRate, $evo_pok->name);
+                    echo self::pok_description($data->maxHP, $data->maxCP, $data->fleeRate, $data->name);
                 echo '</div>';
             }?>
                 <div class="arch_link">
@@ -258,11 +258,11 @@ class view_pokemon {
     /*
      * Pokemons counter and view buttons markup output
      * */
-    static function above_content($filtered_poks) {
+    static function above_content($count) {
         ?>
         <div class="above_content">
             <div class="poks_quantity">
-                    <span class="counter"><?php echo count($filtered_poks) . '</span>' . '<span>' . __(' Pokemons Shown') . '</span>'; ?>
+                    <span class="counter"><?php echo $count . '</span>' . '<span>' . __(' Pokemons Shown') . '</span>'; ?>
             </div>
             <div class="view_buttons">
                 <button class="grid_btn" disabled>
@@ -286,7 +286,7 @@ class view_pokemon {
             <div class="preloader">
                 <?php self::preloader(); ?>
             </div>
-                <?php self::above_content($filtered_poks); ?>
+                <?php self::above_content($length); ?>
                 <div class="pokemons_arch_grid" id="pokemons_arch_grid" data-filt="0">
                     <?php self::archive_page_items_markup($filtered_poks, $arch_query_link);
                     if ($show_more) {

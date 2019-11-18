@@ -2,6 +2,9 @@
 * CUSTOM SCRIPTS
 */
 (function($){
+    /*
+    * find the highest item and make others the same height
+    * */
     $.fn.equalHeight = function () {
         var tallest = 0;
         this.each(function () {
@@ -113,7 +116,6 @@
          * "Show More" button AJAX click event
          * */
         $(document).on('click', '#show_more', function( event ){
-            let count = 15;
             let length = $('.pokemons').data('pok_length') -15;
             event.preventDefault();
             $('#show_more a').text('loading...');
@@ -131,14 +133,9 @@
                         $('#show_more a').text('Show More');
                         $('.pokemons_arch_grid').hide();
                         $('#show_more').before(data);
-                        $('.pokemons_arch_grid').fadeIn(2000);
+                        $('.pokemons_arch_grid').fadeIn(3000);
                         if (ajaxarr.offset >= length) {
-                            count += Number(length);
-                            $('.counter').text(count);
                             $("#show_more").remove();
-                        } else {
-                            count += Number(ajaxarr.offset);
-                            $('.counter').text(count);
                         }
                         ajaxarr.offset = Number(ajaxarr.offset) + 15;
                     } else {
@@ -233,6 +230,9 @@
             min_cp = searchParams.get('cp_val_min') ? searchParams.get('cp_val_min') : $('#cp_val_min').val();
             max_cp = searchParams.get('cp_val_max') ? searchParams.get('cp_val_max') : $('#cp_val_max').val();
             type = searchParams.get('types') ? searchParams.get('types') : $('.poks_filter .ui-selectmenu-text').text();
+            if (searchParams.get('hp_val_min') && $('.pokemons_arch_grid').attr('data-filt') == 0) {
+                action = 'show_filtered';
+            }
             let data_arr = {
                 'action': action,
                 'max_hp': max_hp,
@@ -259,8 +259,10 @@
                     if (window.innerWidth <= 700) {
                         fixHeights();
                     }
-                    count = $('.grid_item').length;
-                    $('.counter').text(count);
+                    if (action === 'show_filtered') {
+                        count = $('.grid_item').length;
+                        $('.counter').text(count);
+                    }
                 }
             })
         });
@@ -268,16 +270,19 @@
         * grid button click event
         * */
         $(document).find('.grid_btn').on('click', function () {
-            let count = 15;
+            let count;
             ajaxarr.offset = 15;
             action = $('.pokemons_arch_grid').attr('data-filt') == 1 ? 'show_filtered' : 'to_grid';
             map_data =  $('#pokemons_arch_grid_map').data('map');
             map_data = 0;
-            min_hp = $('#hp_val_min').val();
-            max_hp = $('#hp_val_max').val();
-            min_cp = $('#cp_val_min').val();
-            max_cp = $('#cp_val_max').val();
-            type = $('.poks_filter .ui-selectmenu-text').text();
+            min_hp = searchParams.get('hp_val_min') ? searchParams.get('hp_val_min') : $('#hp_val_min').val();
+            max_hp = searchParams.get('hp_val_max') ? searchParams.get('hp_val_max') : $('#hp_val_max').val();
+            min_cp = searchParams.get('cp_val_min') ? searchParams.get('cp_val_min') : $('#cp_val_min').val();
+            max_cp = searchParams.get('cp_val_max') ? searchParams.get('cp_val_max') : $('#cp_val_max').val();
+            type = searchParams.get('types') ? searchParams.get('types') : $('.poks_filter .ui-selectmenu-text').text();
+            if (searchParams.get('hp_val_min') && $('.pokemons_arch_grid').attr('data-filt') == 0) {
+                action = 'show_filtered';
+            }
             let data_arr = {
                 'action': action,
                 'max_hp': max_hp,
@@ -402,21 +407,33 @@
                     },
                     complete: function () {
                         $('.counter').text($('.grid_item').length);
-                        if (window.innerWidth >= 700) {
-                            setTimeout(fixHeights, 100);
+                        if (window.innerWidth <= 700 && map_data === 1) {
+                            setTimeout(fixHeights, 200);
+                        } else if (window.innerWidth >= 700 && map_data === 0) {
+                            setTimeout(fixHeights, 200);
                         }
                         slick_init();
                     }
                 })
             }
         });
+        /*
+        *checking query url query params existance and then change .counter text
+        * */
+        if (searchParams.get('hp_val_min') && $('.pokemons_arch_grid').attr('data-filt') == 0) {
+            let count = $('.grid_item').length;
+            $('.counter').text(count);
+        }
+        /*
+        *executes fixHeights function after window loads
+        * */
         $(window).load(function () {
             // Fix heights on page load with screen width >700px
             if (window.innerWidth >= 700) {
-                setTimeout(fixHeights, 500);
+                setTimeout(fixHeights, 1500);
             }
         });
-        // Fix heights on window resize
+        // executes FixHeights on window resize
         if (!$('.pokemons_arch_grid_items') && window.innerWidth >= 700) {
             $(window).resize(function() {
                 // Needs to be a timeout function so it doesn't fire every ms of resize

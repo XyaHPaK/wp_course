@@ -285,12 +285,6 @@ class model_pokemon {
             $out = ob_get_clean();
             return $out;
         }
-
-//        $filtered_poks = array_slice(self::filtered_pokemons(), 0, 15);
-//        ob_start();
-//        view_pokemon::poks_archive_output( $filtered_poks );
-//        $out = ob_get_clean();
-//        return $out;
     }
     /*
      * "poks_filter" shortcode handler
@@ -437,7 +431,8 @@ class model_pokemon {
             function initMap() {
                 let locations = JSON.parse(ajaxarr.coors);
                 let true_filtered_poks = null;
-                if (document.getElementById('pokemons_arch_grid').dataset.filt == 1) {
+                let searchParams = new URLSearchParams(window.location.search);
+                if (document.getElementById('pokemons_arch_grid').dataset.filt == 1 || (document.getElementById('pokemons_arch_grid').dataset.filt == 0 && searchParams.get('hp_val_min'))) {
                     let filtered_poks = JSON.parse(filtered_pokemons);
                     true_filtered_poks = [];
                     for (let i = 0; i < locations.length; i++) {
