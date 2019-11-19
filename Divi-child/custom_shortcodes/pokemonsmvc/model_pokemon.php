@@ -72,7 +72,7 @@ class model_pokemon {
             'headers'     => array(),
             'body'        => array('query' => $schema),
             'cookies'     => array()
-        ) );
+        ));
         $ret = json_decode($ret['body']);
         $pokemon_data_arr = $ret->data->pokemons;
         return $pokemon_data_arr;

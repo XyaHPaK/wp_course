@@ -408,7 +408,6 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
-    transition: .5s;
     position: relative;
     &:before {
       content: '';
@@ -417,10 +416,12 @@
       height: 100%;
       bottom: 0;
       background-color: rgba(255, 255, 255, 0.7);
+      transition: .5s;
     }
     &:hover {
       &:before {
-        content: none;
+        content: '';
+        background-color: rgba(255, 255, 255, 0);
       }
     }
   }
@@ -428,13 +429,15 @@
   button[disabled] {
     cursor: default;
     &:before {
-      content: none;
+      content: '';
+      background-color: rgba(255, 255, 255, 0);
     }
   }
   .poks_quantity {
     margin: auto 0;
     font-size: 24px;
     font-weight: 600;
+    color: #3d1249;
     @media (max-width: 700px) {
       margin-bottom: 10px;
     }
@@ -550,7 +553,6 @@
     }
     &:hover {
       .slick-prev, .slick-next {
-        //visibility: visible !important;
         opacity: 1;
       }
       .slick-prev {
@@ -559,9 +561,14 @@
       .slick-next {
         right: 15px;
       }
+      .pokemon_name:before {
+        content: '';
+        width: 15%;
+        margin-right: 3%;
+        height: 3px;
+      }
     }
     .slick-prev, .slick-next {
-      //visibility: hidden !important;
       opacity: 0;
       z-index: 1;
       top: 50%;
@@ -685,7 +692,16 @@
   border-radius: 5px;
   .pokemon_name {
     margin-left: 2%;
-    color: #f1f1f1
+    color: #f1f1f1;
+    &:before {
+      content: '';
+      display: inline-block;
+      vertical-align: middle;
+      background-color: #e6ba5f;
+      width: 0;
+      height: 3px;
+      transition: .5s;
+    }
   }
   .pokemon_stats {
     list-style-type: none;

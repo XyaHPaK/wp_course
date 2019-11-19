@@ -308,7 +308,6 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
-    transition: .5s;
     position: relative; }
     .above_content button:before {
       content: '';
@@ -316,19 +315,23 @@
       width: 100%;
       height: 100%;
       bottom: 0;
-      background-color: rgba(255, 255, 255, 0.7); }
+      background-color: rgba(255, 255, 255, 0.7);
+      transition: .5s; }
     .above_content button:hover:before {
-      content: none; }
+      content: '';
+      background-color: rgba(255, 255, 255, 0); }
   .above_content button:disabled,
   .above_content button[disabled] {
     cursor: default; }
     .above_content button:disabled:before,
     .above_content button[disabled]:before {
-      content: none; }
+      content: '';
+      background-color: rgba(255, 255, 255, 0); }
   .above_content .poks_quantity {
     margin: auto 0;
     font-size: 24px;
-    font-weight: 600; }
+    font-weight: 600;
+    color: #3d1249; }
     @media (max-width: 700px) {
       .above_content .poks_quantity {
         margin-bottom: 10px; } }
@@ -437,6 +440,11 @@
       left: 15px; }
     .pokemons_arch_grid .grid_item:hover .slick-next, .custom_poks .grid_item:hover .slick-next {
       right: 15px; }
+    .pokemons_arch_grid .grid_item:hover .pokemon_name:before, .custom_poks .grid_item:hover .pokemon_name:before {
+      content: '';
+      width: 15%;
+      margin-right: 3%;
+      height: 3px; }
     .pokemons_arch_grid .grid_item .slick-prev, .pokemons_arch_grid .grid_item .slick-next, .custom_poks .grid_item .slick-prev, .custom_poks .grid_item .slick-next {
       opacity: 0;
       z-index: 1;
@@ -540,6 +548,14 @@
   .pokemon_description .pokemon_name {
     margin-left: 2%;
     color: #f1f1f1; }
+    .pokemon_description .pokemon_name:before {
+      content: '';
+      display: inline-block;
+      vertical-align: middle;
+      background-color: #e6ba5f;
+      width: 0;
+      height: 3px;
+      transition: .5s; }
   .pokemon_description .pokemon_stats {
     list-style-type: none;
     padding: 0;
