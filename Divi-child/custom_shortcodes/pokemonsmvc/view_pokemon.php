@@ -36,72 +36,9 @@ class view_pokemon {
         return $markup;
     }
     /*
-     * markup for single page slider (didn't used in the project)
-     * */
-    function single_poks_slider_markup($data, $image, $hp, $cp, $flee_rate, $name, $types, $weaknesses, $classification, $resistant) {
-        $attacks_arr = model_pokemon::get_attacks_arr($data);
-        ?>
-        <div class="pokemon_cont">
-            <div class="pokemon_cont_inner">
-                <div class="pokemon_image">
-                    <img src="<?php echo $image; ?>" alt="<?php echo $image; ?>">
-                </div>
-                <div class="attacks">
-                    <h3><?php echo __('Attacks') ?></h3>
-                    <div class="attacks_info">
-                        <?php foreach ($attacks_arr as $attack_type => $attack_arr){ ?>
-                            <div class="attack_type">
-                                <h4><?php echo $attack_type ?></h4>
-                                    <?php foreach ($attack_arr as $attack){ ?>
-                                        <ul class="attack_type_list">
-                                            <li><?php echo $attack->name ?></li>
-                                            <li><?php echo __('Type : ') .  $attack->type ?></li>
-                                            <li><?php echo __('Damage : ') .  $attack->damage ?></li>
-                                        </ul>
-                                    <?php } ?>
-                            </div>
-                        <?php } ?>
-                    </div>
-                    <div class="attacks_types">
-                        <?php
-                        echo '<span>' . __('Resistant : ') . '</span>';
-                        foreach ($resistant as $res) echo $res . ' ';
-                        ?>
-                    </div>
-                    <div class="attacks_weak">
-                        <?php
-                        echo '<span>' . __('Weaknesses : ') . '</span>';
-                        foreach ($weaknesses as $weakness) echo $weakness . ' ';
-                        ?>
-                    </div>
-                </div>
-            </div>
-            <div class="pokemon_description">
-                <h2 class="pokemon_name"><?php echo $name; ?></h2>
-                <ul class="pokemon_stats">
-                    <li><?php echo __('Classification : ') . $classification; ?></li>
-                    <li>|</li>
-                    <li><?php echo __('HP : ') . $hp; ?></li>
-                    <li>|</li>
-                    <li><?php echo __('CP : ') . $cp; ?></li>
-                    <li>|</li>
-                    <li><?php echo __('Flee Rate : ') . $flee_rate; ?></li>
-                    <li>|</li>
-                    <li>
-                        <?php
-                        echo __('Types : ');
-                        foreach ($types as $type) echo $type . ' ';
-                        ?>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <?php
-    }
-    /*
      * Slider markup for single page
      * */
-    static function single_page_slider_inner($img_class,$image) {
+    static function single_page_slider_inner($img_class, $image) {
         ?>
         <div class="pokemon_cont">
                 <div class="<?php echo $img_class ?>">
@@ -333,10 +270,13 @@ class view_pokemon {
         $evolutions = $data->evolutions;
         echo '<div class="slider_contaier">';
             echo '<div class="single_page_slider">';
-                    self::single_page_slider_inner('pokemon_image',$data->image);
+                    self::single_page_slider_inner('pokemon_image', $data->image);
                 if ($evolutions) {
-                        foreach ($evolutions as $evo_pok) {
-                            self::single_page_slider_inner('pokemon_image',$evo_pok->image);
+                    foreach ($evolutions as $evo_pok) {
+                        $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok->name);
+                        echo '<a href="'. $link .'">';
+                            self::single_page_slider_inner('pokemon_image', $evo_pok->image);
+                        echo '</a>';
                     }
                 }
             echo '</div>';
@@ -344,7 +284,10 @@ class view_pokemon {
                 self::single_page_slider_inner('pokemon_image_nav',$data->image);
                 if ($evolutions) {
                     foreach ($evolutions as $evo_pok) {
-                        self::single_page_slider_inner('pokemon_image_nav' ,$evo_pok->image);
+                        $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok->name);
+                        echo '<a href="'. $link .'">';
+                            self::single_page_slider_inner('pokemon_image_nav' ,$evo_pok->image);
+                        echo '</a>';
                     }
                 }
             echo '</div>';

@@ -17,7 +17,7 @@
       position:relative;
       width:234px;
       height:28px;
-      margin: 15% auto;
+      margin: 25% auto 0;
     }
 
     .fountainG {
@@ -852,8 +852,8 @@
   height:0;
 }
 
-::-webkit-scrollbar-track {
-  background-color:#efeff1;
+::-webkit-scrollbar:vertical {
+  width: 12px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -866,7 +866,6 @@
   width:7px;
   height:0;
 }
-
 ::-webkit-scrollbar{
   width: 11px;
 }
