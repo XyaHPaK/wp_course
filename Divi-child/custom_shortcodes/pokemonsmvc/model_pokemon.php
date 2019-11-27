@@ -259,9 +259,12 @@ class model_pokemon {
         $map_data = $_POST['map_data'];
         $true_poks = self::get_poks_within_url_queries() ? self::get_poks_within_url_queries() : array_slice(self::filtered_pokemons(), 0, 15);
         $show_more = count($true_poks) >= 15 ? true : null;
-        $fc = fopen(__DIR__ . '/assets/filtered_data.json','w');
-        fwrite($fc, json_encode($true_poks));
-        fclose($fc);
+        if (!self::get_url_queries ()['id']) {
+            $fc = fopen(__DIR__ . '/assets/filtered_data.json','w');
+            fwrite($fc, json_encode($true_poks));
+            fclose($fc);
+        }
+
         ?>
         <script>
             filtered_pokemons = '<? echo self::get_data_from_file('filtered_data.json');?>';
@@ -329,7 +332,7 @@ class model_pokemon {
     /*
      * Add data from json file to array
      * */
-    function get_data_from_file($file_name) {
+    static function get_data_from_file($file_name) {
         $data_arr = file(__DIR__ . '/assets/' . $file_name);
         $data_arr = $data_arr[0];
         return $data_arr;
@@ -537,7 +540,6 @@ class model_pokemon {
                         zoom: 7,
                         center: coors,
                         disableDefaultUI: true,
-                        gestureHandling: 'none',
                         zoomControl: true
                     });
                 // get map styles from .json file

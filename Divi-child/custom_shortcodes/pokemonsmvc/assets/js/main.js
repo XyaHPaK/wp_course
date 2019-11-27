@@ -17,6 +17,9 @@
     * This func finds the highest element with chosen class and make other elements with the same class to be equal to it
     * */
     function fixHeights() {
+        if ($('.pok_evo_item')) {
+            $('.pok_evo_item').equalHeight();
+        }
         $('.pokemon_image').equalHeight();
     }
     function fixHeights1() {
@@ -191,7 +194,9 @@
                     $('.pokemons').hide().html(data);
                 },
                 complete: function () {
-
+                    if($('.parent_pok').length === 0) {
+                        $('.pok_evo').unwrap();
+                    }
                     setTimeout(sp_slick_init, 100);
                     if ($('.single_page_slider_nav').children().length < 2) {
                         $('.single_page_slider_nav').css('display', 'none');

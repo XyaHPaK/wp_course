@@ -256,6 +256,9 @@ class view_pokemon {
     static function poks_load_more() {
         $offset = $_POST['offset'];
         $poks_arr = model_pokemon::filtered_pokemons();
+        $fc = fopen(__DIR__ . '/assets/filtered_data.json','w');
+        fwrite($fc, json_encode($poks_arr));
+        fclose($fc);
         $sliced_poks_arr = array_slice($poks_arr, $offset, 15);
         $arch_query_link = model_pokemon::get_archive_page_link();
         self::archive_page_items_markup($sliced_poks_arr, $arch_query_link);
@@ -267,10 +270,24 @@ class view_pokemon {
     static function single_page_markup() {
         $name = $_POST['name'];
         $data = model_pokemon::get_pokemon_data_by_name($name);
+        $parent_data = json_decode(model_pokemon::get_data_from_file('filtered_data.json'));
+
+        foreach ($parent_data as $pok) {
+            if($pok->evolutions[0]->name && $pok->evolutions[0]->name == $name) {
+                $parent_pok = $pok;
+            }
+            if ($pok->evolutions[1]->name && $pok->evolutions[1]->name == $name) {
+                $parent_pok = $pok->evolutions[0];
+            }
+            if ($pok->evolutions[2]->name && $pok->evolutions[2]->name == $name) {
+                $parent_pok = $pok->evolutions[1];
+            }
+        }
         $evolutions = $data->evolutions;
         echo '<div class="slider_contaier">';
+            echo '<a class ="print-doc" href="javascript:(print());"><i class="fa fa-print" aria-hidden="true"></i></a>';
             echo '<div class="single_page_slider">';
-                    self::single_page_slider_inner('pokemon_image', $data->image);
+                self::single_page_slider_inner('pokemon_image', $data->image);
                 if ($evolutions) {
                     foreach ($evolutions as $evo_pok) {
                         $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok->name);
@@ -298,23 +315,39 @@ class view_pokemon {
         echo '<h2 class="map_ttl">' . __('Estimated Habitat') . '</h2>';
         echo '<div class="map" id="map"></div>';
         model_pokemon::single_map_init();
-        ?><a class ="print-doc" href="javascript:(print());"><?php echo __('Get/Print PDF'); ?></a><?php
-        if ($evolutions) {
-            echo '<div class="pok_evo">';
-                echo '<h2>' . __('Next Evolution Stages') . '</h2>';
+        echo '<div class="next_prev_evo">';
+            if ($parent_pok) {
+                echo '<div class="pok_evo parent_pok">';
+                echo '<h2>' . __('Previous Evolution Stage') . '</h2>';
                 echo '<div class="pok_evo_wrap">';
-                    foreach ($evolutions as $evo_pok) {
-                        $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok->name);
-                      ?>
-                        <a class="pok_evo_item .pok_link" href="<?php echo $link; ?>">
-                            <img src="<?php echo $evo_pok->image; ?>" alt="<?php echo $evo_pok->image; ?>">
-                            <span><?php echo $evo_pok->name ?></span>
-                        </a>
-                        <?php
-                    }
+                $link = model_pokemon::get_archive_page_link() . '?id=' . ($parent_pok->name);
+                ?>
+                <a class="pok_evo_item .pok_link" href="<?php echo $link; ?>">
+                    <img src="<?php echo $parent_pok->image; ?>" alt="<?php echo $parent_pok->image; ?>">
+                    <span><?php echo $parent_pok->name ?></span>
+                </a>
+                <?php
                 echo '</div>';
-            echo '</div>';
-        }
+                echo '</div>';
+            }
+            if ($evolutions) {
+                $single_plural = count($evolutions) < 2 ? 'Stage' : 'Stages';
+                echo '<div class="pok_evo">';
+                    echo '<h2>' . __('Next Evolution '). $single_plural . '</h2>';
+                    echo '<div class="pok_evo_wrap">';
+                        foreach ($evolutions as $evo_pok) {
+                            $link = model_pokemon::get_archive_page_link() . '?id=' . ($evo_pok->name);
+                          ?>
+                            <a class="pok_evo_item .pok_link" href="<?php echo $link; ?>">
+                                <img src="<?php echo $evo_pok->image; ?>" alt="<?php echo $evo_pok->image; ?>">
+                                <span><?php echo $evo_pok->name ?></span>
+                            </a>
+                            <?php
+                        }
+                    echo '</div>';
+                echo '</div>';
+            }
+        echo '</div>';
         die();
     }
     /*
