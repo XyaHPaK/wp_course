@@ -205,15 +205,16 @@
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      @media (max-width: 650px) {
+      @media (max-width: 1000px) {
         flex-direction: column;
       }
-      .pok_detailed_info_attacks, .pok_detailed_info_attacks_other {
+      .pok_detailed_info_attacks {
+        flex: 50%;
+      }
+      .pok_detailed_info_attacks_other {
         flex: 40%;
-        max-width: 40%;
         @media (max-width: 1000px) {
-          flex: 50%;
-          max-width: initial;
+          margin-top: 30px;
         }
       }
       h2 {
@@ -223,12 +224,20 @@
       .attacks_info {
         display: flex;
         justify-content: space-around;
+        flex-direction: column;
         @media (min-width: 1300px) {
           padding: 0 50px;
         }
+        @media (max-width: 500px) {
+          flex-direction: row;
+        }
         .attack_type {
-          &:not(:first-child) {
-            margin-left: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          @media (max-width: 500px) {
+            display: inline-block;
+            text-align: center;
           }
           h3 {
             text-align: center;
@@ -258,9 +267,30 @@
               }
             }
           }
-
         }
       }
+    }
+  }
+  .sp_header {
+    display: flex;
+    align-items: center;
+    a {
+      color: #000e14;
+      &:before {
+        content: '<';
+        position: absolute;
+        left: -15px;
+        transition: .5s;
+      }
+      &:hover {
+        &:before {
+          left: -25px;
+        }
+      }
+    }
+    h1 {
+      padding: 0;
+      margin-left: 15px;
     }
   }
   .slider_contaier {
@@ -288,32 +318,14 @@
       }
     }
     .single_page_slider_nav {
-      max-width: 15%;
-      overflow: hidden;
       @media (max-width: 600px) {
         display: none;
       }
       .slick-list {
-        min-height: 95%;
-        margin-top: 40%;
-      }
-      .pokemon_cont {
-        position: relative;
-        &:before {
-          content: '';
-          position: absolute;
-          top: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0,0,0,0.5);
-          border-radius: 10px;
-        }
-      }
-      .slick-current {
-        .pokemon_cont {
-          position: relative;
-          &:before {
-            content: none;
+        margin-top: 50%;
+        .pokemon_image_nav {
+          img {
+            max-height: 200px;
           }
         }
       }
@@ -321,7 +333,6 @@
         width: 99%;
         height: initial;
         z-index: 1;
-        background-color: #e6ba5f;
       }
       .slick-prev {
         top: 6%;
@@ -383,6 +394,7 @@
   .next_prev_evo {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
   }
   #map {
     height: 400px;

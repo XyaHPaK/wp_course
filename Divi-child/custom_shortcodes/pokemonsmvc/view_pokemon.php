@@ -50,16 +50,15 @@ class view_pokemon {
     /*
      * Single page markup
      * */
-    static function single_page_info_markup($hp , $cp, $flee_rate, $name, $types, $weaknesses, $classification, $resistant, $attacks) {
+    static function single_page_info_markup($hp , $cp, $flee_rate, $types, $weaknesses, $classification, $resistant, $attacks) {
         ?>
-        <h1><?php echo $name ?></h1>
         <div class="pok_detailed_info">
             <div class="pok_detailed_info_attacks">
                 <h2><?php echo __('Attacks'); ?></h2>
                 <div class="attacks_info">
                     <?php foreach ($attacks as $attack_type => $attack_arr){ ?>
                         <div class="attack_type">
-                            <h3><?php echo $attack_type ?></h3>
+                            <h3><?php echo $attack_type . __(':') ?></h3>
                             <?php foreach ($attack_arr as $attack){ ?>
                                 <ul class="attack_type_list">
                                     <li><?php echo $attack->name ?></li>
@@ -284,6 +283,10 @@ class view_pokemon {
             }
         }
         $evolutions = $data->evolutions;
+        echo '<div class="sp_header">';
+            echo '<a href="' . model_pokemon::get_archive_page_link() . '">' . __('Return to selection') . '</a>';
+            echo '<h1>' . $data->name . '</h1>';
+        echo '</div>';
         echo '<div class="slider_contaier">';
             echo '<a class ="print-doc" href="javascript:(print());"><i class="fa fa-print" aria-hidden="true"></i></a>';
             echo '<div class="single_page_slider">';
@@ -310,7 +313,7 @@ class view_pokemon {
             echo '</div>';
         echo '</div>';
         echo  '<div class="pok_detailed">';
-            self::single_page_info_markup($data->maxHP , $data->maxCP, $data->fleeRate, $data->name, $data->types, $data->weaknesses, $data->classification, $data->resistant, $data->attacks);
+            self::single_page_info_markup($data->maxHP , $data->maxCP, $data->fleeRate, $data->types, $data->weaknesses, $data->classification, $data->resistant, $data->attacks);
         echo '</div>';
         echo '<h2 class="map_ttl">' . __('Estimated Habitat') . '</h2>';
         echo '<div class="map" id="map"></div>';

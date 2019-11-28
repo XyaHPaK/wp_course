@@ -95,9 +95,6 @@
             vertical: true,
             verticalSwiping: true,
             asNavFor: '.single_page_slider',
-            centerMode: true,
-            centerPadding: false,
-            focusOnSelect: true,
             infinite: false,
             arrows: true,
         });
@@ -136,7 +133,7 @@
                         $('#show_more a').text('Show More');
                         $('.pokemons_arch_grid').hide();
                         $('#show_more').before(data);
-                        $('.pokemons_arch_grid').fadeIn(3000);
+                        $('.pokemons_arch_grid').show();
                         if (ajaxarr.offset >= length) {
                             $("#show_more").remove();
                         }
@@ -315,7 +312,7 @@
                     }
                     $('.counter').text(count);
                     if (window.innerWidth >= 700) {
-                        fixHeights();
+                        setTimeout(fixHeights, 150);
                     }
                 }
             })

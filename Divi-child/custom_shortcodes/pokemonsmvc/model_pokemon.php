@@ -466,7 +466,8 @@ class model_pokemon {
                         position: new google.maps.LatLng(first_locations[i].lat, first_locations[i].lng),
                         map: map,
                         icon: 'http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png',
-                        title: first_locations[i].name
+                        title: first_locations[i].name,
+                        animation: google.maps.Animation.DROP
                     });
                     map.markers.push(marker);
 
@@ -487,18 +488,25 @@ class model_pokemon {
                     }));
                     google.maps.event.addListener(marker, 'mouseout', (function () {
                         this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
+                        this.setZIndex(10);
                     }));
                 }
                 (function($){
                     $(document).ready(function() {
-                        $('.pokemon_cont').on('hover', function () {
+                        $('.pokemon_cont').on('mouseover', function () {
                             let name = $(this).attr('data-name');
                             $.each(map.markers, function() {
                                 this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
                                 if(this['title'] == name) {
                                     this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/pikachu_icon.png');
-                                    this.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                                    this.setZIndex(google.maps.Marker.MAX_ZINDEX);
                                 }
+                            })
+                        });
+                        $('.pokemon_cont').on('mouseout', function () {
+                            $.each(map.markers, function() {
+                                this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
+                                this.setZIndex(10);
                             })
                         });
                     });
