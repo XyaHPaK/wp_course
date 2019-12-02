@@ -111,7 +111,8 @@ class view_pokemon {
         if ($names !== '') { ?>
             <div class="custom_poks">
             <?php foreach ($names_arr as $name) {
-                $data = model_pokemon::get_pokemon_data_by_name($name);
+                $schema = model_pokemon::pokemon_schema_by_name($name);
+                $data = model_pokemon::get_pokemons_data($schema, true);
                 $link = model_pokemon::get_archive_page_link(). '?id=' .($data->name);
                 $evolutions = $data->evolutions;
                 echo '<div class="grid_item">';
@@ -250,7 +251,6 @@ class view_pokemon {
         echo '</div>';
         echo '<div id="pokemons_arch_grid_map" class="pokemons_arch_grid_map" data-map="0">';
             echo '<div id="map_arch"></div>';
-            model_pokemon::arch_map_init();
         echo '</div>';
     }
     /*
@@ -258,7 +258,8 @@ class view_pokemon {
      * */
     static function single_page_markup() {
         $name = $_POST['name'];
-        $data = model_pokemon::get_pokemon_data_by_name($name);
+        $schema = model_pokemon::pokemon_schema_by_name($name);
+        $data = model_pokemon::get_pokemons_data($schema, true);
         $parent_data = json_decode(model_pokemon::get_data_from_file('filtered_data.json'));
 
         foreach ($parent_data as $pok) {
@@ -307,7 +308,6 @@ class view_pokemon {
         echo '</div>';
         echo '<h2 class="map_ttl">' . __('Estimated Habitat') . '</h2>';
         echo '<div class="map" id="map"></div>';
-        model_pokemon::single_map_init();
         echo '<div class="next_prev_evo">';
             if ($parent_pok) {
                 echo '<div class="pok_evo parent_pok">';

@@ -34,22 +34,24 @@ class model_pokemon {
      * Scripts and styles enqueue method
      * */
     function enqueues() {
+        $google_token = get_option('google_api_option')['access_token'];
         wp_enqueue_style( 'pokemon_page_styles', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/css/pokemon_page.css');
         wp_enqueue_script('minify_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/js/minify.js', array('jquery'));
         wp_enqueue_script('main_js', get_stylesheet_directory_uri() . '/custom_shortcodes/pokemonsmvc/assets/js/main.js', array('jquery', 'minify_js'));
+        ?>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $google_token; ?>"></script>
+        <?php
     }
     /*
      * localize script method
      * */
     function localize() {
         $coors_data = self::get_data_from_file('coors.json');
-        $arch_link = self::get_archive_page_link();
         wp_localize_script('main_js', 'ajaxarr',
             array(
                 'ajaxurl' => admin_url( 'admin-ajax.php' ),
                 'offset' => 15,
-                'coors' => $coors_data,
-                'arch_link' => $arch_link
+                'coors' => $coors_data
             )
         );
     }
@@ -62,7 +64,7 @@ class model_pokemon {
     /*
      * Get data from https://graphql-pokemon.now.sh/ graphQL server
      * */
-    public static function get_pokemons_data($schema) {
+    public static function get_pokemons_data($schema, $single = null) {
         $url = 'https://graphql-pokemon.now.sh/';
         $ret = wp_remote_post( $url, array(
             'timeout'     => 5,
@@ -74,45 +76,29 @@ class model_pokemon {
             'cookies'     => array()
         ));
         $ret = json_decode($ret['body']);
-        $pokemon_data_arr = $ret->data->pokemons;
+        $pokemon_data_arr = $single ? $ret->data->pokemon : $ret->data->pokemons;
         return $pokemon_data_arr;
     }
     /*
-     * Get data from https://graphql-pokemon.now.sh/ graphQL server by pokemons name
+     * Pokemons attacks info array
      * */
-    public static function get_pokemon_data_by_name ($name) {
-        $url = 'https://graphql-pokemon.now.sh/';
-        $ret = wp_remote_post( $url, array(
-            'timeout'     => 5,
-            'redirection' => 5,
-            'httpversion' => '1.0',
-            'blocking'    => true,
-            'headers'     => array(),
-            'body'        => array('query' =>
-                '{
-      pokemon(name:"' . $name . '") {
-        image
-        maxHP
-        maxCP
-        fleeRate
-        name
-        types
-        weaknesses
-        classification
-        resistant
-        attacks {
-          special {
-            name
-            type
-            damage
-          }
-          fast {
-            name
-            type
-            damage
-          }
+    static function get_attacks_arr ($data) {
+        if ($data->attacks) {
+            $attacks_arr = array();
+            foreach ($data->attacks as $name => $attack) {
+                $attacks_arr[$name] = $attack;
+            }
         }
-        evolutions {
+
+        return $attacks_arr;
+    }
+    /*
+     * Pokemon schema for single pokemon data request
+     * */
+    public static function pokemon_schema_by_name ($name) {
+
+        $schema = '{
+          pokemon(name:"' . $name . '") {
             image
             maxHP
             maxCP
@@ -134,28 +120,32 @@ class model_pokemon {
                 damage
               }
             }
-        }
-      }
-    }'
-            ) ,
-            'cookies'     => array()
-        ) );
-        $ret = json_decode($ret['body']);
-        $single_pokemon_data = $ret->data->pokemon;
-        return $single_pokemon_data;
-    }
-    /*
-     * Pokemons attacks info array
-     * */
-    static function get_attacks_arr ($data) {
-        if ($data->attacks) {
-            $attacks_arr = array();
-            foreach ($data->attacks as $name => $attack) {
-                $attacks_arr[$name] = $attack;
+            evolutions {
+                image
+                maxHP
+                maxCP
+                fleeRate
+                name
+                types
+                weaknesses
+                classification
+                resistant
+                attacks {
+                  special {
+                    name
+                    type
+                    damage
+                  }
+                  fast {
+                    name
+                    type
+                    damage
+                  }
+                }
             }
-        }
-
-        return $attacks_arr;
+          }
+        }';
+        return $schema;
     }
     /*
      * Get 1st stage evolution pokemons arrays from all pokemons data (arg must be a graphQL schema and contain
@@ -468,152 +458,6 @@ class model_pokemon {
         }
 
         die();
-    }
-    /*
-     * Initialize a map from google on map view archive page
-     * */
-    static function arch_map_init() {
-        ?>
-        <script type="text/javascript">
-
-
-            function initMap() {
-                let locations = JSON.parse(ajaxarr.coors);
-                let true_filtered_poks = null;
-                let searchParams = new URLSearchParams(window.location.search);
-                if (document.getElementById('pokemons_arch_grid').dataset.filt == 1 || (document.getElementById('pokemons_arch_grid').dataset.filt == 0 && searchParams.get('hp_val_min'))) {
-                    let filtered_poks = JSON.parse(filtered_pokemons);
-                    true_filtered_poks = [];
-                    for (let i = 0; i < locations.length; i++) {
-                        for (let j = 0; j < filtered_poks.length; j++) {
-                            if (locations[i].name === filtered_poks[j].name) {
-                                true_filtered_poks.push(locations[i]);
-                            }
-                        }
-                    }
-                }
-                let offset = Number(ajaxarr.offset);
-                let first_locations = true_filtered_poks === null ? locations.splice(0, offset) : true_filtered_poks.splice(0, offset);
-                let map = new google.maps.Map(document.getElementById('map_arch'), {
-                    zoom: 5,
-                    center: new google.maps.LatLng(48, 31),
-                    mapTypeId: google.maps.MapTypeId.ROADMAP,
-                    disableDefaultUI: true,
-                    zoomControl: true,
-                    markers: []
-                });
-
-                let infowindow = new google.maps.InfoWindow();
-
-                let marker, i;
-
-                for (i = 0; i < first_locations.length; i++) {
-                    marker = new google.maps.Marker({
-                        position: new google.maps.LatLng(first_locations[i].lat, first_locations[i].lng),
-                        map: map,
-                        icon: 'http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png',
-                        title: first_locations[i].name,
-                        animation: google.maps.Animation.DROP
-                    });
-                    map.markers.push(marker);
-
-                    google.maps.event.addListener(marker, 'click', (function (marker, i) {
-                        return function () {
-                            let image = document.querySelectorAll('[data-name="' + first_locations[i].name + '"]')[0].innerHTML;
-                            let desc = document.querySelectorAll('[data-desc="' + first_locations[i].name + '"]')[0].innerHTML;
-                            infowindow.setContent(image + desc);
-                            infowindow.open(map, marker);
-                        }
-                    })(marker, i));
-                    google.maps.event.addListener(map, 'click', function() {
-                            infowindow.close();
-                    });
-                    google.maps.event.addListener(marker, 'mouseover', (function () {
-                        this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/pikachu_icon.png');
-                        this.setZIndex(google.maps.Marker.MAX_ZINDEX);
-                    }));
-                    google.maps.event.addListener(marker, 'mouseout', (function () {
-                        this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
-                        this.setZIndex(10);
-                    }));
-                }
-                (function($){
-                    $(document).ready(function() {
-                        $('.pokemon_cont').on('mouseover', function () {
-                            let name = $(this).attr('data-name');
-                            $.each(map.markers, function() {
-                                this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
-                                if(this['title'] == name) {
-                                    this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/pikachu_icon.png');
-                                    this.setZIndex(google.maps.Marker.MAX_ZINDEX);
-                                }
-                            })
-                        });
-                        $('.pokemon_cont').on('mouseout', function () {
-                            $.each(map.markers, function() {
-                                this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
-                                this.setZIndex(10);
-                            })
-                        });
-                    });
-                })(jQuery);
-            }
-        </script>
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaawMpqt4K0p0D2IFqSWOQmphuNblK0aM&callback=initMap"></script>
-        <?php
-    }
-    /*
-     * Map init method on single pages
-     * */
-    static function single_map_init () {
-        ?>
-        <script>
-            // Initialize and add the map
-            function initMap() {
-                const data_arr = JSON.parse(ajaxarr.coors);
-                let searchParams = new URLSearchParams(window.location.search);
-                let name = searchParams.get('id');
-                let true_coors = {};
-                for (let i = 0; i < data_arr.length; i++) {
-                    for (let j=0; j<data_arr[i].evolutions.length; j++) {
-                        if (data_arr[i].name == name || data_arr[i].evolutions[j].name == name) {
-                            let lat = Number(data_arr[i].lat.toFixed(2));
-                            let lng = Number(data_arr[i].lng.toFixed(2));
-                            true_coors = {lat, lng};
-                        }
-                    }
-                }
-
-
-                let coors = true_coors;
-
-
-                // The map, centered at cors
-                let map = new google.maps.Map(
-                    document.getElementById('map'), {
-                        zoom: 7,
-                        center: coors,
-                        disableDefaultUI: true,
-                        zoomControl: true
-                    });
-                // get map styles from .json file
-                (function($){
-                    $.getJSON("/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/custom_map_style.json", function(data) {
-                        map.setOptions({styles: data});
-                    });
-                })(jQuery);
-                // The marker, positioned at cors
-                let marker = new google.maps.Marker({
-                    position: coors,
-                    map: map,
-                    title: name,
-                    animation: google.maps.Animation.BOUNCE,
-                    icon: 'http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png'
-                });
-            }
-        </script>
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaawMpqt4K0p0D2IFqSWOQmphuNblK0aM&callback=initMap"></script>
-        <?php
     }
 }
 /*

@@ -14,6 +14,7 @@ include_once 'inc/api_connect.php';
 /** API options */
 include_once 'inc/api_options.php';
 include_once 'inc/instagram_api_options.php';
+include_once 'inc/GoogleApiOptions.php';
 /*Slug exist checking*/
 include_once 'inc/db_slug_checking.php';
 /*Cron tasks*/
