@@ -4,7 +4,7 @@
 * */
 .pokemons .preloader {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   left: -50%;
@@ -16,7 +16,7 @@
     position: relative;
     width: 234px;
     height: 28px;
-    margin: 25% auto 0; }
+    margin: 20% auto 0; }
   .pokemons .preloader .fountainG {
     position: absolute;
     top: 0;
@@ -180,7 +180,7 @@
     .pokemons .pok_detailed .pok_detailed_info .attacks_info .attack_type {
       display: flex;
       align-items: center;
-      justify-content: space-between; }
+      justify-content: space-around; }
       @media (max-width: 500px) {
         .pokemons .pok_detailed .pok_detailed_info .attacks_info .attack_type {
           display: inline-block;

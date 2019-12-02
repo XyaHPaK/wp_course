@@ -216,7 +216,11 @@ class view_pokemon {
      * */
     static function poks_archive_output( $filtered_poks, $show_more = null ) {
         $arch_query_link = model_pokemon::get_archive_page_link();
-        $length = count(model_pokemon::filtered_pokemons());
+        if (model_pokemon::get_filtering_data_from_cookies()) {
+            $length = count(model_pokemon::get_poks_within_cookie_queries());
+        } else {
+            $length = count(model_pokemon::filtered_pokemons());
+        }
         ?>
         <div class="pokemons" data-pok_length ="<?php echo $length; ?>">
             <div class="preloader">
@@ -248,20 +252,6 @@ class view_pokemon {
             echo '<div id="map_arch"></div>';
             model_pokemon::arch_map_init();
         echo '</div>';
-    }
-    /*
-     * outputs data from the earlier filtered array to the screen when "Show More" button si clicked (next 15 from array)
-     * */
-    static function poks_load_more() {
-        $offset = $_POST['offset'];
-        $poks_arr = model_pokemon::filtered_pokemons();
-        $fc = fopen(__DIR__ . '/assets/filtered_data.json','w');
-        fwrite($fc, json_encode($poks_arr));
-        fclose($fc);
-        $sliced_poks_arr = array_slice($poks_arr, $offset, 15);
-        $arch_query_link = model_pokemon::get_archive_page_link();
-        self::archive_page_items_markup($sliced_poks_arr, $arch_query_link);
-        die();
     }
     /*
      * single page output
@@ -372,9 +362,8 @@ class view_pokemon {
         $url_parts = parse_url($url);
         $arch_url = model_pokemon::get_archive_page_link();
         $arch_url_parts = parse_url($arch_url);
-
         $action = $url_parts['path'] == $arch_url_parts['path'] ? '/' : $arch_url;
-        $query = model_pokemon::get_url_queries();
+        $true_type = model_pokemon::get_filtering_data_from_cookies()['type'];
         $poks_arr = model_pokemon::filtered_pokemons($schema);
         $types = model_pokemon::get_query_arr($poks_arr,'types');
         $min_hp = min(model_pokemon::get_query_arr($poks_arr,'maxHP'));
@@ -388,16 +377,11 @@ class view_pokemon {
                 <select name="types" id="types">
                     <?php foreach ($types as $key => $type) {
                         if ($key == 0) {
-                            if ($query == 'All') {
                             ?>
-                                <option selected><?php echo __('All'); ?></option>
-                            <?php } else {
-                            ?>
-                                <option><?php echo __('All'); ?></option>
+                            <option><?php echo __('All'); ?></option>
                             <?php
-                            }
                         }
-                        if ($type == $query['types']) {
+                        if ($type == $true_type) {
                         ?>
                             <option selected><?php echo $type; ?></option>
                         <?php } else {
