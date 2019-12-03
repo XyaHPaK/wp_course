@@ -5,19 +5,20 @@
 .pokemons {
   .preloader {
     display: none;
+    align-items: center;
     position: fixed;
     top: 0;
-    bottom: 0;
+    //bottom: 0;
     left: -50%;
     width: 200%;
-    height: 100vh;
+    height: 100%;
     background-color: rgba(255,255,255,0.5);
     z-index: 1;
     #fountainG {
       position:relative;
       width:234px;
       height:28px;
-      margin: 20% auto 0;
+      margin: auto;
     }
 
     .fountainG {
@@ -398,6 +399,7 @@
   }
   #map {
     height: 400px;
+    margin-bottom: 30px;
   }
   .print-doc {
     display: flex;
@@ -495,7 +497,6 @@
     .grid_item, .show_more {
       max-width: initial;
       flex: initial;
-      margin: 10px 0;
       @media (max-width: 700px) {
         position: relative;
         min-width: 175px;
@@ -528,7 +529,7 @@
     }
     .show_more {
       position: absolute;
-      bottom: -10px;
+      bottom: -15px;
       width: 23%;
       font-size: 26px;
       @media (max-width: 1000px) {

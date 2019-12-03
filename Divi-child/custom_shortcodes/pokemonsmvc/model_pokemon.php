@@ -46,12 +46,10 @@ class model_pokemon {
      * localize script method
      * */
     function localize() {
-        $coors_data = self::get_data_from_file('coors.json');
         wp_localize_script('main_js', 'ajaxarr',
             array(
                 'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                'offset' => 15,
-                'coors' => $coors_data
+                'offset' => 15
             )
         );
     }
@@ -83,8 +81,8 @@ class model_pokemon {
      * Pokemons attacks info array
      * */
     static function get_attacks_arr ($data) {
+        $attacks_arr = array();
         if ($data->attacks) {
-            $attacks_arr = array();
             foreach ($data->attacks as $name => $attack) {
                 $attacks_arr[$name] = $attack;
             }
@@ -174,7 +172,7 @@ class model_pokemon {
         $filtered_poks = array();
          $evo_arr = array();
          foreach ($pokemons as $pokemon) {
-             if ($pokemon->evolutions !== null) {
+             if ($pokemon->evolutions) {
                  $evo = $pokemon->evolutions;
                  foreach ($evo as $e) {
                      array_push($evo_arr,$e->name);
@@ -183,7 +181,7 @@ class model_pokemon {
          }
          $true_evo_arr = array_unique($evo_arr);
         foreach ($pokemons as $key => $pokemon) {
-            if ($pokemon->evolutions && !in_array($pokemon->name, $true_evo_arr)) {
+            if (!in_array($pokemon->name, $true_evo_arr) && $pokemon->name !== "Farfetch'd") {
                 array_push($filtered_poks,$pokemon);
             }
         }
@@ -259,6 +257,9 @@ class model_pokemon {
      * "poks_arch_single" shortcode handler
      * */
     function pokemons_arch_shortcode_handler() {
+//        echo '<pre>';
+//        var_dump(self::filtered_pokemons());
+//        echo '</pre>';
         $query = self::get_url_queries();
         $map_data = $_POST['map_data'];
         $true_poks_sliced = self::get_poks_within_cookie_queries() ? array_slice(self::get_poks_within_cookie_queries(), 0, 15) : array_slice(self::filtered_pokemons(), 0, 15);
@@ -298,8 +299,31 @@ class model_pokemon {
      * "poks_filter" shortcode handler
      * */
     function filtering_shortcode_handler() {
+        $schema = '{
+          pokemons(first: 200) {
+            name
+            types
+            maxHP
+            maxCP
+            evolutions {
+               name
+            }
+          }
+        }';
+        $url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        $url_parts = parse_url($url);
+        $arch_url = model_pokemon::get_archive_page_link();
+        $arch_url_parts = parse_url($arch_url);
+        $action = $url_parts['path'] == $arch_url_parts['path'] ? '/' : $arch_url;
+        $true_type = model_pokemon::get_filtering_data_from_cookies()['type'];
+        $poks_arr = model_pokemon::filtered_pokemons($schema);
+        $types = model_pokemon::get_query_arr($poks_arr,'types');
+        $min_hp = min(model_pokemon::get_query_arr($poks_arr,'maxHP'));
+        $max_hp = max(model_pokemon::get_query_arr($poks_arr,'maxHP'));
+        $min_cp = min(model_pokemon::get_query_arr($poks_arr,'maxCP'));
+        $max_cp = max(model_pokemon::get_query_arr($poks_arr,'maxCP'));
         ob_start();
-        view_pokemon::filter_markup();
+        view_pokemon::filter_markup($action, $types, $true_type, $min_hp, $max_hp, $min_cp, $max_cp);
         $out = ob_get_clean();
         return $out;
     }
@@ -383,7 +407,24 @@ class model_pokemon {
      * for ajax, executes single page markup
      * */
     static function single_page_output() {
-      view_pokemon::single_page_markup();
+        $name = $_POST['name'];
+        $schema = model_pokemon::pokemon_schema_by_name($name);
+        $data = model_pokemon::get_pokemons_data($schema, true);
+        $parent_data = json_decode(model_pokemon::get_data_from_file('filtered_data.json'));
+        $parent_pok = null;
+        foreach ($parent_data as $pok) {
+            if($pok->evolutions[0]->name && $pok->evolutions[0]->name == $name) {
+                $parent_pok = $pok;
+            }
+            if ($pok->evolutions[1]->name && $pok->evolutions[1]->name == $name) {
+                $parent_pok = $pok->evolutions[0];
+            }
+            if ($pok->evolutions[2]->name && $pok->evolutions[2]->name == $name) {
+                $parent_pok = $pok->evolutions[1];
+            }
+        }
+        $evolutions = $data->evolutions;
+        view_pokemon::single_page_markup($data, $evolutions, $parent_pok);
     }
     /*
      * map view button AJAX event handler

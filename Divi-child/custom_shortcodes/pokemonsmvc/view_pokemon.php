@@ -203,10 +203,10 @@ class view_pokemon {
             </div>
             <div class="view_buttons">
                 <button class="grid_btn" disabled>
-                    <img src="http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/nine-black-tiles_icon-icons.com_73478.png">
+                    <img src="/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/nine-black-tiles.png">
                 </button>
                 <button class="map_btn">
-                    <img src="http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/map.png">
+                    <img src="/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/map.png">
                 </button>
             </div>
         </div>
@@ -256,24 +256,7 @@ class view_pokemon {
     /*
      * single page output
      * */
-    static function single_page_markup() {
-        $name = $_POST['name'];
-        $schema = model_pokemon::pokemon_schema_by_name($name);
-        $data = model_pokemon::get_pokemons_data($schema, true);
-        $parent_data = json_decode(model_pokemon::get_data_from_file('filtered_data.json'));
-
-        foreach ($parent_data as $pok) {
-            if($pok->evolutions[0]->name && $pok->evolutions[0]->name == $name) {
-                $parent_pok = $pok;
-            }
-            if ($pok->evolutions[1]->name && $pok->evolutions[1]->name == $name) {
-                $parent_pok = $pok->evolutions[0];
-            }
-            if ($pok->evolutions[2]->name && $pok->evolutions[2]->name == $name) {
-                $parent_pok = $pok->evolutions[1];
-            }
-        }
-        $evolutions = $data->evolutions;
+    static function single_page_markup($data, $evolutions, $parent_pok) {
         echo '<div class="sp_header">';
             echo '<a href="' . model_pokemon::get_archive_page_link() . '">' . __('Return to selection') . '</a>';
             echo '<h1>' . $data->name . '</h1>';
@@ -346,30 +329,7 @@ class view_pokemon {
     /*
      * filtering forms markup
      * */
-    static function filter_markup() {
-        $schema = '{
-          pokemons(first: 200) {
-            name
-            types
-            maxHP
-            maxCP
-            evolutions {
-               name
-            }
-          }
-        }';
-        $url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-        $url_parts = parse_url($url);
-        $arch_url = model_pokemon::get_archive_page_link();
-        $arch_url_parts = parse_url($arch_url);
-        $action = $url_parts['path'] == $arch_url_parts['path'] ? '/' : $arch_url;
-        $true_type = model_pokemon::get_filtering_data_from_cookies()['type'];
-        $poks_arr = model_pokemon::filtered_pokemons($schema);
-        $types = model_pokemon::get_query_arr($poks_arr,'types');
-        $min_hp = min(model_pokemon::get_query_arr($poks_arr,'maxHP'));
-        $max_hp = max(model_pokemon::get_query_arr($poks_arr,'maxHP'));
-        $min_cp = min(model_pokemon::get_query_arr($poks_arr,'maxCP'));
-        $max_cp = max(model_pokemon::get_query_arr($poks_arr,'maxCP'));
+    static function filter_markup($action, $types, $true_type, $min_hp, $max_hp, $min_cp, $max_cp) {
         ?>
         <form class="poks_filter" action="<?php echo $action; ?>">
             <fieldset>

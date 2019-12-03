@@ -14,7 +14,6 @@ include_once 'inc/api_connect.php';
 /** API options */
 include_once 'inc/api_options.php';
 include_once 'inc/instagram_api_options.php';
-include_once 'inc/GoogleApiOptions.php';
 /*Slug exist checking*/
 include_once 'inc/db_slug_checking.php';
 /*Cron tasks*/
@@ -23,3 +22,5 @@ include_once 'inc/cron.php';
 include_once 'inc/test.php';
 /*custom shortcodes inclusion*/
 include_once 'custom_shortcodes/custom_shortcodes.php';
+/*Pokemon options page*/
+include_once 'inc/PokemonOptions.php';

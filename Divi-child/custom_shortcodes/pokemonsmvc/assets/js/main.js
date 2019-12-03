@@ -120,6 +120,13 @@
         /* Getting URL Search Params */
         let searchParams = new URLSearchParams(window.location.search);
         /*
+        *
+        * */
+        // $.getJSON("/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/filtered_data.json", function(data) {
+        //     filtered_pokemons = data;
+        //     console.log(filtered_pokemons);
+        // });
+        /*
          * "Show More" button AJAX click event
          * */
         $(document).on('click', '#show_more', function( event ){
@@ -197,7 +204,7 @@
                         width: '100%',
                         height: '100vh'
                     });
-                    $('.preloader').css('display', 'block');
+                    $('.preloader').css('display', 'flex');
                 },
                 success: function (data) {
                     $('.pokemons').css({
@@ -270,7 +277,7 @@
                 data: data_arr,
                 type: 'POST',
                 beforeSend: function () {
-                    $('.preloader').css('display', 'block');
+                    $('.preloader').css('display', 'flex');
                 },
                 success: function (data) {
                     $('.preloader').css('display', 'none');
@@ -321,7 +328,7 @@
                 data: data_arr,
                 type: 'POST',
                 beforeSend: function () {
-                    $('.preloader').css('display', 'block');
+                    $('.preloader').css('display', 'flex');
                 },
                 success: function (data) {
                     $('.preloader').css('display', 'none');
@@ -435,7 +442,7 @@
                     data: data_arr,
                     type: 'POST',
                     beforeSend: function () {
-                        $('.preloader').css('display', 'block');
+                        $('.preloader').css('display', 'flex');
                     },
                     success: function (data) {
                         $('.preloader').css('display', 'none');
@@ -446,12 +453,14 @@
                         console.log(e);
                     },
                     complete: function () {
-                        initMap();
+                        if (map_data === 1) {
+                            initMap();
+                        }
                         $('.counter').text(JSON.parse(filtered_pokemons).length);
                         if (window.innerWidth <= 700 && map_data === 1) {
                             setTimeout(fixHeights, 300);
                         } else if (window.innerWidth >= 700 && map_data === 0) {
-                            setTimeout(fixHeights, 300);
+                            setTimeout(fixHeights, 400);
                         }
                         slick_init();
                     }
@@ -459,10 +468,17 @@
             }
         });
         /*
+        * Getting data from file coors.json needed to display pokemons locations on the map, locations variable used in
+        * initMap and initMap_single functions
+        * */
+        $.getJSON("/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/coors.json", function(data) {
+            locations = data;
+        });
+
+        /*
         * Initialize map for map view on archive page
         * */
         function initMap() {
-            let locations = JSON.parse(ajaxarr.coors);
             let true_filtered_poks = null;
             let searchParams = new URLSearchParams(window.location.search);
             if (document.getElementById('pokemons_arch_grid').dataset.filt == 1 || (document.getElementById('pokemons_arch_grid').dataset.filt == 0 && searchParams.get('hp_val_min'))) {
@@ -495,7 +511,7 @@
                 marker = new google.maps.Marker({
                     position: new google.maps.LatLng(first_locations[i].lat, first_locations[i].lng),
                     map: map,
-                    icon: 'http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png',
+                    icon: '/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/poks_marker.png',
                     title: first_locations[i].name,
                     animation: google.maps.Animation.DROP
                 });
@@ -513,11 +529,11 @@
                     infowindow.close();
                 });
                 google.maps.event.addListener(marker, 'mouseover', (function () {
-                    this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/pikachu_icon.png');
+                    this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/pikachu_icon.png');
                     this.setZIndex(google.maps.Marker.MAX_ZINDEX);
                 }));
                 google.maps.event.addListener(marker, 'mouseout', (function () {
-                    this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
+                    this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/poks_marker.png');
                     this.setZIndex(10);
                 }));
             }
@@ -525,16 +541,16 @@
             $('.pokemon_cont').on('mouseover', function () {
                 let name = $(this).attr('data-name');
                 $.each(map.markers, function() {
-                    this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
+                    this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/poks_marker.png');
                     if(this['title'] == name) {
-                        this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/pikachu_icon.png');
+                        this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/pikachu_icon.png');
                         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
                     }
                 })
             });
             $('.pokemon_cont').on('mouseout', function () {
                 $.each(map.markers, function() {
-                    this.setIcon('http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png');
+                    this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/poks_marker.png');
                     this.setZIndex(10);
                 })
             });
@@ -543,17 +559,22 @@
         *   Initialize map on single page
         * */
         function initMap_single() {
-            const data_arr = JSON.parse(ajaxarr.coors);
             let searchParams = new URLSearchParams(window.location.search);
             let name = searchParams.get('id');
             let true_coors = {};
-            for (let i = 0; i < data_arr.length; i++) {
-                for (let j=0; j<data_arr[i].evolutions.length; j++) {
-                    if (data_arr[i].name == name || data_arr[i].evolutions[j].name == name) {
-                        let lat = Number(data_arr[i].lat.toFixed(2));
-                        let lng = Number(data_arr[i].lng.toFixed(2));
-                        true_coors = {lat, lng};
+            for (let i = 0; i < locations.length; i++) {
+                if (locations[i].evolutions) {
+                    for (let j=0; j<locations[i].evolutions.length; j++) {
+                        if (locations[i].name === name || locations[i].evolutions[j].name === name) {
+                            let lat = Number(locations[i].lat.toFixed(2));
+                            let lng = Number(locations[i].lng.toFixed(2));
+                            true_coors = {lat, lng};
+                        }
                     }
+                } else {
+                    let lat = Number(locations[i].lat.toFixed(2));
+                    let lng = Number(locations[i].lng.toFixed(2));
+                    true_coors = {lat, lng};
                 }
             }
 
@@ -570,18 +591,16 @@
                     zoomControl: true
                 });
             // get map styles from .json file
-            (function($){
-                $.getJSON("/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/custom_map_style.json", function(data) {
-                    map.setOptions({styles: data});
-                });
-            })(jQuery);
+            $.getJSON("/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/custom_map_style.json", function(data) {
+                map.setOptions({styles: data});
+            });
             // The marker, positioned at cors
             let marker = new google.maps.Marker({
                 position: coors,
                 map: map,
                 title: name,
                 animation: google.maps.Animation.BOUNCE,
-                icon: 'http://oshawa-dev.mifist.in.ua/wp-content/uploads/2019/10/poks_marker.png'
+                icon: '/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/poks_marker.png'
             });
         }
         /*
