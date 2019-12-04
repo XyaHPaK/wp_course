@@ -262,7 +262,8 @@ class view_pokemon {
             echo '<h1>' . $data->name . '</h1>';
         echo '</div>';
         echo '<div class="slider_contaier">';
-            echo '<a class ="print-doc" href="javascript:(print());"><i class="fa fa-print" aria-hidden="true"></i></a>';
+
+        echo '<a class ="print-doc" href="javascript:(print());"><i class="fa fa-print" aria-hidden="true"></i></a>';
             echo '<div class="single_page_slider">';
                 self::single_page_slider_inner('pokemon_image', $data->image);
                 if ($evolutions) {

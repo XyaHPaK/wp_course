@@ -120,13 +120,6 @@
         /* Getting URL Search Params */
         let searchParams = new URLSearchParams(window.location.search);
         /*
-        *
-        * */
-        // $.getJSON("/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/filtered_data.json", function(data) {
-        //     filtered_pokemons = data;
-        //     console.log(filtered_pokemons);
-        // });
-        /*
          * "Show More" button AJAX click event
          * */
         $(document).on('click', '#show_more', function( event ){
@@ -517,6 +510,7 @@
                 });
                 map.markers.push(marker);
 
+
                 google.maps.event.addListener(marker, 'click', (function (marker, i) {
                     return function () {
                         let image = document.querySelectorAll('[data-name="' + first_locations[i].name + '"]')[0].innerHTML;
@@ -529,7 +523,7 @@
                     infowindow.close();
                 });
                 google.maps.event.addListener(marker, 'mouseover', (function () {
-                    this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/pikachu_icon.png');
+                    this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/' + this.title.toLowerCase() + '.png');
                     this.setZIndex(google.maps.Marker.MAX_ZINDEX);
                 }));
                 google.maps.event.addListener(marker, 'mouseout', (function () {
@@ -539,11 +533,12 @@
             }
 
             $('.pokemon_cont').on('mouseover', function () {
+
                 let name = $(this).attr('data-name');
                 $.each(map.markers, function() {
                     this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/poks_marker.png');
-                    if(this['title'] == name) {
-                        this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/pikachu_icon.png');
+                    if(this.title === name) {
+                        this.setIcon('/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/assets/images/' + this.title.toLowerCase() + '.png');
                         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
                     }
                 })

@@ -530,8 +530,9 @@
     .show_more {
       position: absolute;
       bottom: -15px;
-      width: 23%;
+      width: 24%;
       font-size: 26px;
+      margin-left: 0;
       @media (max-width: 1000px) {
         width: 28%;
         font-size: 24px;

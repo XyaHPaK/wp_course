@@ -175,12 +175,17 @@ class model_pokemon {
              if ($pokemon->evolutions) {
                  $evo = $pokemon->evolutions;
                  foreach ($evo as $e) {
-                     array_push($evo_arr,$e->name);
+                     if($e->name !== "Jigglypuff") {
+                         array_push($evo_arr,$e->name);
+                     }
                  }
              }
          }
          $true_evo_arr = array_unique($evo_arr);
         foreach ($pokemons as $key => $pokemon) {
+            if($pokemon->name == "Jigglypuff") {
+                unset($pokemon->evolutions);
+            }
             if (!in_array($pokemon->name, $true_evo_arr) && $pokemon->name !== "Farfetch'd") {
                 array_push($filtered_poks,$pokemon);
             }
@@ -257,9 +262,6 @@ class model_pokemon {
      * "poks_arch_single" shortcode handler
      * */
     function pokemons_arch_shortcode_handler() {
-//        echo '<pre>';
-//        var_dump(self::filtered_pokemons());
-//        echo '</pre>';
         $query = self::get_url_queries();
         $map_data = $_POST['map_data'];
         $true_poks_sliced = self::get_poks_within_cookie_queries() ? array_slice(self::get_poks_within_cookie_queries(), 0, 15) : array_slice(self::filtered_pokemons(), 0, 15);
