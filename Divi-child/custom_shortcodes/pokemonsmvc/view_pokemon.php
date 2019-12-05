@@ -257,13 +257,15 @@ class view_pokemon {
      * single page output
      * */
     static function single_page_markup($data, $evolutions, $parent_pok) {
+
         echo '<div class="sp_header">';
             echo '<a href="' . model_pokemon::get_archive_page_link() . '">' . __('Return to selection') . '</a>';
             echo '<h1>' . $data->name . '</h1>';
         echo '</div>';
         echo '<div class="slider_contaier">';
-
         echo '<a class ="print-doc" href="javascript:(print());"><i class="fa fa-print" aria-hidden="true"></i></a>';
+        echo '<a class ="share" href="/"><i class="fa fa-share-alt" aria-hidden="true"></i></a>';
+        echo do_shortcode('[ssba-buttons]');
             echo '<div class="single_page_slider">';
                 self::single_page_slider_inner('pokemon_image', $data->image);
                 if ($evolutions) {

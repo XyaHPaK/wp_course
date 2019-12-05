@@ -297,22 +297,27 @@
 .pokemons #map {
   height: 400px;
   margin-bottom: 30px; }
-.pokemons .print-doc {
+.pokemons .print-doc, .pokemons .share {
   display: flex;
   position: absolute;
   background-color: #efeff1;
   color: #000e14;
   transition: .5s;
   z-index: 1;
-  right: 10%;
+  right: 65px;
   top: 1%;
   width: 50px;
   height: 50px;
   font-size: 40px;
   align-items: center;
   justify-content: center; }
-  .pokemons .print-doc:hover {
+  .pokemons .print-doc:hover, .pokemons .share:hover {
     transform: scale(1.05); }
+  @media (max-width: 1000px) {
+    .pokemons .print-doc, .pokemons .share {
+      display: none; } }
+.pokemons .share {
+  right: 0; }
 
 .above_content {
   display: flex;
@@ -714,6 +719,24 @@
 
 ::-webkit-scrollbar {
   width: 11px; }
+
+.ssba {
+  min-width: 50px;
+  max-width: 50px;
+  margin-top: 1%;
+  max-height: 0;
+  overflow: hidden;
+  -webkit-transition: max-height 0.4s linear;
+  -moz-transition: max-height 0.4s linear;
+  transition: max-height 0.4s linear; }
+  @media (max-width: 1000px) {
+    .ssba {
+      display: none; } }
+  .ssba .ssbp-text {
+    display: none; }
+
+.ssba.active {
+  max-height: 300px; }
 
 @media print {
   header, footer, .slick-prev, .slick-next, .print-doc, .pok_evo, .poks_filter {

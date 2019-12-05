@@ -222,9 +222,18 @@
                     } else {
                     setTimeout(sp_slick_nav_init, 100);
                     }
-                    setTimeout(fix_sliders_heights, 150);
-                    setTimeout(fixHeights, 150);
+                    setTimeout(fix_sliders_heights, 300);
+                    setTimeout(fixHeights, 300);
                     $('.pokemons').fadeIn(800);
+                    $('.share').on('click', function (e) {
+                        e.preventDefault();
+                        $('.ssba').toggleClass('active');
+                    });
+                    let id_part = searchParams.get('id');
+                    let path_part = window.location.pathname;
+                    $('.ssba a').each(function(){
+                        this.href = this.href.replace('/wp-admin/admin-ajax.php', path_part + '?id=' + id_part);
+                    });
                 }
             })
         }
