@@ -234,6 +234,22 @@
                     $('.ssba a').each(function(){
                         this.href = this.href.replace('/wp-admin/admin-ajax.php', path_part + '?id=' + id_part);
                     });
+                    $('.pdf').on('click', function (e) {
+                        e.preventDefault();
+                        let data_arr = {
+                            'action': 'pdf',
+                            'name' : name
+                        };
+                        $.ajax({
+                            url: ajaxarr.ajaxurl,
+                            data: data_arr,
+                            type: 'POST',
+                            complete: function () {
+                                window.open('http://oshawa-dev.mifist.in.ua/wp-content/themes/Divi-child/custom_shortcodes/pokemonsmvc/uploads/pokemon-pdf.pdf');
+                            }
+
+                        })
+                    })
                 }
             })
         }

@@ -1,5 +1,9 @@
 <?php
 namespace pokemons\mvc;
+//include autoloader
+require_once 'assets/dompdf/autoload.inc.php';
+use Dompdf\Dompdf;
+use Dompdf\Options;
 class model_pokemon {
     function __construct() {
         /*Adding [poks_arch_single] shortcode*/
@@ -29,6 +33,9 @@ class model_pokemon {
             /*"filter" button on grid view ajax handler hooks*/
         add_action('wp_ajax_show_filtered', array(&$this, 'show_filtered'));
         add_action('wp_ajax_nopriv_show_filtered', array(&$this, 'show_filtered'));
+
+        add_action('wp_ajax_pdf', array(&$this, 'dompdf'));
+        add_action('wp_ajax_nopriv_pdf', array(&$this, 'dompdf'));
     }
     /*
      * Scripts and styles enqueue method
@@ -218,7 +225,10 @@ class model_pokemon {
     static function get_url_queries () {
         $url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         $parts = parse_url($url);
-        parse_str($parts['query'], $query);
+        $query = null;
+        if(isset($parts['query'])) {
+            parse_str($parts['query'], $query);
+        }
         return $query;
     }
     static function get_filtering_data_from_cookies() {
@@ -263,7 +273,10 @@ class model_pokemon {
      * */
     function pokemons_arch_shortcode_handler() {
         $query = self::get_url_queries();
-        $map_data = $_POST['map_data'];
+        $map_data = null;
+        if (isset($_POST['map_data'])) {
+            $map_data = $_POST['map_data'];
+        }
         $true_poks_sliced = self::get_poks_within_cookie_queries() ? array_slice(self::get_poks_within_cookie_queries(), 0, 15) : array_slice(self::filtered_pokemons(), 0, 15);
         $true_poks = self::get_poks_within_cookie_queries() ? self::get_poks_within_cookie_queries() : self::filtered_pokemons();
         $show_more = count($true_poks) >= 15 ? true : null;
@@ -393,7 +406,7 @@ class model_pokemon {
             'names' => ''
         ), $atts));
         ob_start();
-        view_pokemon::custom_poks_output($names);
+        view_pokemon::custom_poks_output($atts['names']);
         $out = ob_get_clean();
         return $out;
     }
@@ -409,19 +422,22 @@ class model_pokemon {
      * for ajax, executes single page markup
      * */
     static function single_page_output() {
-        $name = $_POST['name'];
+        $name = null;
+        if (isset($_POST['name'])) {
+            $name = $_POST['name'];
+        }
         $schema = model_pokemon::pokemon_schema_by_name($name);
         $data = model_pokemon::get_pokemons_data($schema, true);
         $parent_data = json_decode(model_pokemon::get_data_from_file('filtered_data.json'));
         $parent_pok = null;
         foreach ($parent_data as $pok) {
-            if($pok->evolutions[0]->name && $pok->evolutions[0]->name == $name) {
+            if(isset($pok->evolutions[0]->name) && $pok->evolutions[0]->name == $name) {
                 $parent_pok = $pok;
             }
-            if ($pok->evolutions[1]->name && $pok->evolutions[1]->name == $name) {
+            if (isset($pok->evolutions[1]->name) && $pok->evolutions[1]->name == $name) {
                 $parent_pok = $pok->evolutions[0];
             }
-            if ($pok->evolutions[2]->name && $pok->evolutions[2]->name == $name) {
+            if (isset($pok->evolutions[2]->name) && $pok->evolutions[2]->name == $name) {
                 $parent_pok = $pok->evolutions[1];
             }
         }
@@ -501,6 +517,91 @@ class model_pokemon {
         }
 
         die();
+    }
+    /*
+     * Dompdf
+     * */
+    public static function dompdf() {
+
+        $name = null;
+        if (isset($_POST['name'])) {
+            $name = $_POST['name'];
+        }
+        $schema = model_pokemon::pokemon_schema_by_name($name);
+        $data = model_pokemon::get_pokemons_data($schema, true);
+
+        $options = new Options();
+
+        $options->set('isRemoteEnabled', true );
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('defaultMediaType', 'all');
+        $options->set('isFontSubsettingEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $options->set('isJavascriptEnabled', true);
+        $options->set('DOMPDF_UNICODE_ENABLED', true);
+        $options-> set('defaultFont', 'helvetica');
+
+        // instantiate and use the dompdf class
+
+
+        $dompdf = new Dompdf($options);
+
+
+        //make the content here
+        //using output buffer
+        ob_start();
+        ?>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset='utf-8'>
+            <style>
+                body {
+                    text-align: center;
+                }
+                .ttl {
+                    font-size: 50px;
+                    margin-top: 200px;
+                }
+                .stats {
+                    margin-top: 30px;
+                }
+                .stats span {
+                    margin: 0 25px;
+                    font-size: 30px;
+                }
+            </style>
+            <title><?php echo $data->name; ?></title>
+        </head>
+        <body>
+            <h1 class="ttl"><?php echo $data->name; ?></h1>
+            <div>
+                <img src="<?php echo $data->image ?>" alt="<?php echo $data->image ?>">
+            </div>
+            <div class="stats">
+                <span>HP: <?php echo $data->maxHP ?></span>
+                <span>CP: <?php echo $data->maxCP ?></span>
+                <span>Flee Rate: <?php echo $data->fleeRate; ?></span>
+            </div>
+        </body>
+        </html>
+        <?php
+
+        $html = ob_get_clean();
+
+        $dompdf->loadHtml($html, 'UTF-8');
+
+        // (Optional) Setup the paper size and orientation
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        $pdf_gen = $dompdf->output();
+        $file = __DIR__ . '/uploads/pokemon-pdf.pdf';
+        file_put_contents($file, $pdf_gen);
+        die();
+
     }
 }
 /*

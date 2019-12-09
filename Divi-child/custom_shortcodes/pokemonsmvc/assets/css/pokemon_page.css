@@ -232,17 +232,23 @@
         font-size: 25px; } }
   .pokemons .slider_contaier .single_page_slider {
     max-width: 80%; }
+    @media (max-width: 600px) {
+      .pokemons .slider_contaier .single_page_slider {
+        margin-left: 8%; } }
     .pokemons .slider_contaier .single_page_slider .pokemon_image {
       display: flex;
       align-items: center;
       justify-content: center; }
-  @media (max-width: 600px) {
+  @media (max-width: 900px) {
     .pokemons .slider_contaier .single_page_slider_nav {
       display: none; } }
   .pokemons .slider_contaier .single_page_slider_nav .slick-list {
-    margin-top: 50%; }
-    .pokemons .slider_contaier .single_page_slider_nav .slick-list .pokemon_image_nav img {
-      max-height: 200px; }
+    margin-top: 85px; }
+    .pokemons .slider_contaier .single_page_slider_nav .slick-list .pokemon_cont {
+      min-width: 150px; }
+      .pokemons .slider_contaier .single_page_slider_nav .slick-list .pokemon_cont .pokemon_image_nav img {
+        max-height: 200px;
+        margin: auto; }
   .pokemons .slider_contaier .single_page_slider_nav .slick-prev, .pokemons .slider_contaier .single_page_slider_nav .slick-next {
     width: 99%;
     height: initial;
@@ -297,7 +303,7 @@
 .pokemons #map {
   height: 400px;
   margin-bottom: 30px; }
-.pokemons .print-doc, .pokemons .share {
+.pokemons .print-doc, .pokemons .share, .pokemons .pdf {
   display: flex;
   position: absolute;
   background-color: #efeff1;
@@ -311,13 +317,15 @@
   font-size: 40px;
   align-items: center;
   justify-content: center; }
-  .pokemons .print-doc:hover, .pokemons .share:hover {
+  .pokemons .print-doc:hover, .pokemons .share:hover, .pokemons .pdf:hover {
     transform: scale(1.05); }
   @media (max-width: 1000px) {
-    .pokemons .print-doc, .pokemons .share {
+    .pokemons .print-doc, .pokemons .share, .pokemons .pdf {
       display: none; } }
 .pokemons .share {
   right: 0; }
+.pokemons .pdf {
+  right: 130px; }
 
 .above_content {
   display: flex;
@@ -731,7 +739,11 @@
   transition: max-height 0.4s linear; }
   @media (max-width: 1000px) {
     .ssba {
-      display: none; } }
+      max-height: initial; } }
+  @media (max-width: 600px) {
+    .ssba {
+      min-width: 20px;
+      width: 28px !important; } }
   .ssba .ssbp-text {
     display: none; }
 

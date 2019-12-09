@@ -263,6 +263,7 @@ class view_pokemon {
             echo '<h1>' . $data->name . '</h1>';
         echo '</div>';
         echo '<div class="slider_contaier">';
+        echo '<a class ="pdf" href="/"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>';
         echo '<a class ="print-doc" href="javascript:(print());"><i class="fa fa-print" aria-hidden="true"></i></a>';
         echo '<a class ="share" href="/"><i class="fa fa-share-alt" aria-hidden="true"></i></a>';
         echo do_shortcode('[ssba-buttons]');
